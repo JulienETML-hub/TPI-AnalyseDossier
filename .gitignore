@@ -69,3 +69,10 @@ coverage/
 """
 with open(".gitignore", "w", encoding="utf-8") as f:
     f.write(content)
+Rendu Planif.pdf
+export onlinegant.csv
+H-TPI-ALL-CdC-Mares_Julien_Pierre_v2.pdf
+TPI_PlanificationInitiale_JulienMares.pdf
+TPI-planification-jnvtrl_JulienMares.xlsm
+TPI_Rapport_JulienMares_2026.docx
+RenduJournalVersionning/TPI_JournalDeTravail04052026_JulienMares.pdf
