@@ -37,7 +37,7 @@
             // 
             // heavierFileBtn
             // 
-            heavierFileBtn.Location = new Point(12, 189);
+            heavierFileBtn.Location = new Point(1, 164);
             heavierFileBtn.Name = "heavierFileBtn";
             heavierFileBtn.Size = new Size(125, 33);
             heavierFileBtn.TabIndex = 0;
@@ -47,14 +47,14 @@
             // 
             // panelMainPnl
             // 
-            panelMainPnl.Location = new Point(141, 38);
+            panelMainPnl.Location = new Point(132, 12);
             panelMainPnl.Name = "panelMainPnl";
-            panelMainPnl.Size = new Size(759, 430);
+            panelMainPnl.Size = new Size(773, 469);
             panelMainPnl.TabIndex = 1;
             // 
             // heavierFolderBtn
             // 
-            heavierFolderBtn.Location = new Point(12, 228);
+            heavierFolderBtn.Location = new Point(1, 203);
             heavierFolderBtn.Name = "heavierFolderBtn";
             heavierFolderBtn.Size = new Size(125, 33);
             heavierFolderBtn.TabIndex = 2;
@@ -64,7 +64,7 @@
             // 
             // resultBtn
             // 
-            resultBtn.Location = new Point(12, 150);
+            resultBtn.Location = new Point(1, 125);
             resultBtn.Name = "resultBtn";
             resultBtn.Size = new Size(125, 33);
             resultBtn.TabIndex = 3;
@@ -74,7 +74,7 @@
             // 
             // globalBtn
             // 
-            globalBtn.Location = new Point(12, 111);
+            globalBtn.Location = new Point(1, 86);
             globalBtn.Name = "globalBtn";
             globalBtn.Size = new Size(125, 33);
             globalBtn.TabIndex = 4;

@@ -21,11 +21,21 @@ namespace TPI_AnalyseDossier
         {
             InitializeComponent();
             InitChart();
-            valueAvgFileSize.Text = "424,22 Ko";
-            valueBiggestFile.Text = "25.2 Go";
-            valueBiggestFolder.Text = "52.62 Go";
-            valueFileCounterLbl.Text = "67";
-            valueFolderCounterLbl.Text = "13";
+
+            listView1.View = View.Details;
+            listView1.Columns.Add("Dossier", 50);
+            listView1.Columns.Add("Fichier", 50);
+            listView1.Columns.Add("Taille moyenne fichier", 130);
+            listView1.Columns.Add("Plus grand dossier", 130);
+            listView1.Columns.Add("Plus grand fichier", 130);
+            ListViewItem item = new ListViewItem("26"); 
+            item.SubItems.Add("252");                   
+            item.SubItems.Add("30,26Mo");                  
+            item.SubItems.Add("Excel.exe");                   
+            item.SubItems.Add("test.txt");
+
+            listView1.Items.Add(item);
+
         }
 
         private void avgFileSize_Click(object sender, EventArgs e)
@@ -39,7 +49,7 @@ namespace TPI_AnalyseDossier
         }
         private void initTree(string path)
         {
-            
+
         }
         private void parcourirBtn_Click_2(object sender, EventArgs e)
         {
@@ -78,11 +88,13 @@ namespace TPI_AnalyseDossier
         private void LoadDirectory(string path)
         {
             treeView1.Nodes.Clear();
+            if (path != null)
+            {
+                DirectoryInfo rootDir = new DirectoryInfo(path);
+                TreeNode rootNode = CreateDirectoryNode(rootDir);
 
-            DirectoryInfo rootDir = new DirectoryInfo(path);
-            TreeNode rootNode = CreateDirectoryNode(rootDir);
-
-            treeView1.Nodes.Add(rootNode);
+                treeView1.Nodes.Add(rootNode);
+            }
         }
         private TreeNode CreateDirectoryNode(DirectoryInfo directory)
         {
@@ -93,7 +105,9 @@ namespace TPI_AnalyseDossier
                 // Ajouter les dossiers
                 foreach (var dir in directory.GetDirectories())
                 {
-                    node.Nodes.Add(CreateDirectoryNode(dir));
+                    TreeNode dirNode = CreateDirectoryNode(dir);
+                    dirNode.ImageIndex = 0;
+                    node.Nodes.Add(dirNode);
 
                 }
 
@@ -107,6 +121,7 @@ namespace TPI_AnalyseDossier
                     fileNode.ImageIndex = imageList1.Images.Count - 1;
                     node.Nodes.Add(fileNode);
                 }
+
             }
             catch (UnauthorizedAccessException)
             {
@@ -114,6 +129,16 @@ namespace TPI_AnalyseDossier
             }
 
             return node;
+        }
+
+        private void folderCounterLbl_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

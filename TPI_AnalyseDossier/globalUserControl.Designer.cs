@@ -30,76 +30,19 @@
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(globalUserControl));
-            biggestFileLbl = new Label();
-            biggestFolderLbl = new Label();
-            avgFileSize = new Label();
-            fileCounterLbl = new Label();
-            folderCounterLbl = new Label();
             parcourirBtn = new Button();
             pathLbl = new Label();
             treeView1 = new TreeView();
             panelGraphic1 = new Panel();
-            valueBiggestFile = new Label();
-            valueBiggestFolder = new Label();
-            valueAvgFileSize = new Label();
-            valueFileCounterLbl = new Label();
-            valueFolderCounterLbl = new Label();
+            listView1 = new ListView();
             imageList1 = new ImageList(components);
+            exportPDFBtn = new Button();
+            imageList2 = new ImageList(components);
             SuspendLayout();
-            // 
-            // biggestFileLbl
-            // 
-            biggestFileLbl.AutoSize = true;
-            biggestFileLbl.Font = new Font("Segoe UI", 10F);
-            biggestFileLbl.Location = new Point(578, 56);
-            biggestFileLbl.Name = "biggestFileLbl";
-            biggestFileLbl.Size = new Size(114, 19);
-            biggestFileLbl.TabIndex = 17;
-            biggestFileLbl.Text = "Plus grand fichier";
-            // 
-            // biggestFolderLbl
-            // 
-            biggestFolderLbl.AutoSize = true;
-            biggestFolderLbl.Font = new Font("Segoe UI", 10F);
-            biggestFolderLbl.Location = new Point(451, 56);
-            biggestFolderLbl.Name = "biggestFolderLbl";
-            biggestFolderLbl.Size = new Size(121, 19);
-            biggestFolderLbl.TabIndex = 16;
-            biggestFolderLbl.Text = "Plus grand dossier";
-            // 
-            // avgFileSize
-            // 
-            avgFileSize.AutoSize = true;
-            avgFileSize.Font = new Font("Segoe UI", 10F);
-            avgFileSize.Location = new Point(307, 56);
-            avgFileSize.Name = "avgFileSize";
-            avgFileSize.Size = new Size(138, 19);
-            avgFileSize.TabIndex = 15;
-            avgFileSize.Text = "Taille moyenne fichier";
-            // 
-            // fileCounterLbl
-            // 
-            fileCounterLbl.AutoSize = true;
-            fileCounterLbl.Font = new Font("Segoe UI", 10F);
-            fileCounterLbl.Location = new Point(253, 56);
-            fileCounterLbl.Name = "fileCounterLbl";
-            fileCounterLbl.Size = new Size(48, 19);
-            fileCounterLbl.TabIndex = 14;
-            fileCounterLbl.Text = "Fichier";
-            // 
-            // folderCounterLbl
-            // 
-            folderCounterLbl.AutoSize = true;
-            folderCounterLbl.Font = new Font("Segoe UI", 10F);
-            folderCounterLbl.Location = new Point(193, 56);
-            folderCounterLbl.Name = "folderCounterLbl";
-            folderCounterLbl.Size = new Size(54, 19);
-            folderCounterLbl.TabIndex = 13;
-            folderCounterLbl.Text = "Dossier";
             // 
             // parcourirBtn
             // 
-            parcourirBtn.Location = new Point(617, 23);
+            parcourirBtn.Location = new Point(636, 23);
             parcourirBtn.Name = "parcourirBtn";
             parcourirBtn.Size = new Size(75, 23);
             parcourirBtn.TabIndex = 12;
@@ -109,73 +52,44 @@
             // 
             // pathLbl
             // 
-            pathLbl.AutoSize = true;
-            pathLbl.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            pathLbl.Location = new Point(193, 23);
+            pathLbl.Cursor = Cursors.WaitCursor;
+            pathLbl.FlatStyle = FlatStyle.Flat;
+            pathLbl.Font = new Font("Segoe UI", 9F);
+            pathLbl.Location = new Point(230, 23);
             pathLbl.Name = "pathLbl";
-            pathLbl.Size = new Size(191, 21);
+            pathLbl.Size = new Size(425, 23);
             pathLbl.TabIndex = 11;
             pathLbl.Text = "Aucun chemin sélectionné";
             // 
             // treeView1
             // 
-            treeView1.Location = new Point(39, 56);
+            treeView1.Location = new Point(3, 23);
             treeView1.Name = "treeView1";
-            treeView1.Size = new Size(121, 352);
+            treeView1.ShowLines = false;
+            treeView1.ShowPlusMinus = false;
+            treeView1.Size = new Size(223, 417);
             treeView1.TabIndex = 10;
             treeView1.AfterSelect += treeView1_AfterSelect;
             // 
             // panelGraphic1
             // 
-            panelGraphic1.Location = new Point(193, 106);
+            panelGraphic1.Location = new Point(232, 104);
             panelGraphic1.Name = "panelGraphic1";
-            panelGraphic1.Size = new Size(499, 304);
+            panelGraphic1.Size = new Size(479, 249);
             panelGraphic1.TabIndex = 9;
             // 
-            // valueBiggestFile
+            // listView1
             // 
-            valueBiggestFile.AutoSize = true;
-            valueBiggestFile.Font = new Font("Segoe UI", 10F);
-            valueBiggestFile.Location = new Point(589, 75);
-            valueBiggestFile.Name = "valueBiggestFile";
-            valueBiggestFile.Size = new Size(0, 19);
-            valueBiggestFile.TabIndex = 22;
-            // 
-            // valueBiggestFolder
-            // 
-            valueBiggestFolder.AutoSize = true;
-            valueBiggestFolder.Font = new Font("Segoe UI", 10F);
-            valueBiggestFolder.Location = new Point(460, 75);
-            valueBiggestFolder.Name = "valueBiggestFolder";
-            valueBiggestFolder.Size = new Size(0, 19);
-            valueBiggestFolder.TabIndex = 21;
-            // 
-            // valueAvgFileSize
-            // 
-            valueAvgFileSize.AutoSize = true;
-            valueAvgFileSize.Font = new Font("Segoe UI", 10F);
-            valueAvgFileSize.Location = new Point(317, 75);
-            valueAvgFileSize.Name = "valueAvgFileSize";
-            valueAvgFileSize.Size = new Size(0, 19);
-            valueAvgFileSize.TabIndex = 20;
-            // 
-            // valueFileCounterLbl
-            // 
-            valueFileCounterLbl.AutoSize = true;
-            valueFileCounterLbl.Font = new Font("Segoe UI", 10F);
-            valueFileCounterLbl.Location = new Point(266, 75);
-            valueFileCounterLbl.Name = "valueFileCounterLbl";
-            valueFileCounterLbl.Size = new Size(0, 19);
-            valueFileCounterLbl.TabIndex = 19;
-            // 
-            // valueFolderCounterLbl
-            // 
-            valueFolderCounterLbl.AutoSize = true;
-            valueFolderCounterLbl.Font = new Font("Segoe UI", 10F);
-            valueFolderCounterLbl.Location = new Point(204, 75);
-            valueFolderCounterLbl.Name = "valueFolderCounterLbl";
-            valueFolderCounterLbl.Size = new Size(0, 19);
-            valueFolderCounterLbl.TabIndex = 18;
+            listView1.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+            listView1.HideSelection = true;
+            listView1.Location = new Point(230, 49);
+            listView1.Name = "listView1";
+            listView1.Scrollable = false;
+            listView1.Size = new Size(481, 49);
+            listView1.TabIndex = 24;
+            listView1.UseCompatibleStateImageBehavior = false;
+            listView1.View = View.Details;
+            listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
             // 
             // imageList1
             // 
@@ -184,20 +98,30 @@
             imageList1.TransparentColor = Color.Transparent;
             imageList1.Images.SetKeyName(0, "folderIcon.png");
             // 
+            // exportPDFBtn
+            // 
+            exportPDFBtn.BackColor = Color.RosyBrown;
+            exportPDFBtn.BackgroundImage = (Image)resources.GetObject("exportPDFBtn.BackgroundImage");
+            exportPDFBtn.BackgroundImageLayout = ImageLayout.Stretch;
+            exportPDFBtn.Location = new Point(678, 388);
+            exportPDFBtn.Name = "exportPDFBtn";
+            exportPDFBtn.Size = new Size(50, 52);
+            exportPDFBtn.TabIndex = 23;
+            exportPDFBtn.UseVisualStyleBackColor = false;
+            // 
+            // imageList2
+            // 
+            imageList2.ColorDepth = ColorDepth.Depth32Bit;
+            imageList2.ImageStream = (ImageListStreamer)resources.GetObject("imageList2.ImageStream");
+            imageList2.TransparentColor = Color.Transparent;
+            imageList2.Images.SetKeyName(0, "pdfIcon.png");
+            // 
             // globalUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(valueFolderCounterLbl);
-            Controls.Add(valueBiggestFile);
-            Controls.Add(valueBiggestFolder);
-            Controls.Add(valueAvgFileSize);
-            Controls.Add(valueFileCounterLbl);
-            Controls.Add(biggestFileLbl);
-            Controls.Add(biggestFolderLbl);
-            Controls.Add(avgFileSize);
-            Controls.Add(fileCounterLbl);
-            Controls.Add(folderCounterLbl);
+            Controls.Add(listView1);
+            Controls.Add(exportPDFBtn);
             Controls.Add(parcourirBtn);
             Controls.Add(pathLbl);
             Controls.Add(treeView1);
@@ -206,25 +130,16 @@
             Size = new Size(731, 443);
             Load += globalUserControl_Load;
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-
-        private Label biggestFileLbl;
-        private Label biggestFolderLbl;
-        private Label avgFileSize;
-        private Label fileCounterLbl;
-        private Label folderCounterLbl;
         private Button parcourirBtn;
         private Label pathLbl;
         private TreeView treeView1;
         private Panel panelGraphic1;
-        private Label valueBiggestFile;
-        private Label valueBiggestFolder;
-        private Label valueAvgFileSize;
-        private Label valueFileCounterLbl;
-        private Label valueFolderCounterLbl;
         private ImageList imageList1;
+        private Button exportPDFBtn;
+        private ImageList imageList2;
+        private ListView listView1;
     }
 }
