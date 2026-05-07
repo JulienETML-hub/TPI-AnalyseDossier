@@ -30,13 +30,16 @@
         {
             heavierFileBtn = new Button();
             panelMainPnl = new Panel();
+            heavierFolderBtn = new Button();
+            resultBtn = new Button();
+            globalBtn = new Button();
             SuspendLayout();
             // 
             // heavierFileBtn
             // 
-            heavierFileBtn.Location = new Point(12, 86);
+            heavierFileBtn.Location = new Point(12, 189);
             heavierFileBtn.Name = "heavierFileBtn";
-            heavierFileBtn.Size = new Size(123, 23);
+            heavierFileBtn.Size = new Size(125, 33);
             heavierFileBtn.TabIndex = 0;
             heavierFileBtn.Text = "Top 10 Fichiers";
             heavierFileBtn.UseVisualStyleBackColor = true;
@@ -46,16 +49,49 @@
             // 
             panelMainPnl.Location = new Point(141, 38);
             panelMainPnl.Name = "panelMainPnl";
-            panelMainPnl.Size = new Size(609, 390);
+            panelMainPnl.Size = new Size(759, 430);
             panelMainPnl.TabIndex = 1;
+            // 
+            // heavierFolderBtn
+            // 
+            heavierFolderBtn.Location = new Point(12, 228);
+            heavierFolderBtn.Name = "heavierFolderBtn";
+            heavierFolderBtn.Size = new Size(125, 33);
+            heavierFolderBtn.TabIndex = 2;
+            heavierFolderBtn.Text = "Top 10 Dossiers";
+            heavierFolderBtn.UseVisualStyleBackColor = true;
+            heavierFolderBtn.Click += heavierFolderBtn_Click;
+            // 
+            // resultBtn
+            // 
+            resultBtn.Location = new Point(12, 150);
+            resultBtn.Name = "resultBtn";
+            resultBtn.Size = new Size(125, 33);
+            resultBtn.TabIndex = 3;
+            resultBtn.Text = "Résultats";
+            resultBtn.UseVisualStyleBackColor = true;
+            resultBtn.Click += resultBtn_Click;
+            // 
+            // globalBtn
+            // 
+            globalBtn.Location = new Point(12, 111);
+            globalBtn.Name = "globalBtn";
+            globalBtn.Size = new Size(125, 33);
+            globalBtn.TabIndex = 4;
+            globalBtn.Text = "Vue d'ensemble";
+            globalBtn.UseVisualStyleBackColor = true;
+            globalBtn.Click += globalBtn_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(panelMainPnl);
+            ClientSize = new Size(902, 480);
+            Controls.Add(globalBtn);
+            Controls.Add(resultBtn);
             Controls.Add(heavierFileBtn);
+            Controls.Add(heavierFolderBtn);
+            Controls.Add(panelMainPnl);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
@@ -66,5 +102,8 @@
 
         private Button heavierFileBtn;
         private Panel panelMainPnl;
+        private Button heavierFolderBtn;
+        private Button resultBtn;
+        private Button globalBtn;
     }
 }

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.IO;
 namespace TPI_AnalyseDossier
 {
     public partial class globalUserControl : UserControl
@@ -21,6 +21,11 @@ namespace TPI_AnalyseDossier
         {
             InitializeComponent();
             InitChart();
+            valueAvgFileSize.Text = "424,22 Ko";
+            valueBiggestFile.Text = "25.2 Go";
+            valueBiggestFolder.Text = "52.62 Go";
+            valueFileCounterLbl.Text = "67";
+            valueFolderCounterLbl.Text = "13";
         }
 
         private void avgFileSize_Click(object sender, EventArgs e)
@@ -32,13 +37,17 @@ namespace TPI_AnalyseDossier
         {
 
         }
-
+        private void initTree(string path)
+        {
+            
+        }
         private void parcourirBtn_Click_2(object sender, EventArgs e)
         {
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.ShowDialog();
             selectedPath = dialog.SelectedPath;
             pathLbl.Text = selectedPath;
+            LoadDirectory(selectedPath);
         }
         private void InitChart()
         {
@@ -55,6 +64,56 @@ namespace TPI_AnalyseDossier
             };
 
             panelGraphic1.Controls.Add(_pieChart);
+        }
+
+        private void globalUserControl_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+        private void LoadDirectory(string path)
+        {
+            treeView1.Nodes.Clear();
+
+            DirectoryInfo rootDir = new DirectoryInfo(path);
+            TreeNode rootNode = CreateDirectoryNode(rootDir);
+
+            treeView1.Nodes.Add(rootNode);
+        }
+        private TreeNode CreateDirectoryNode(DirectoryInfo directory)
+        {
+            TreeNode node = new TreeNode(directory.Name);
+            treeView1.ImageList = imageList1;
+            try
+            {
+                // Ajouter les dossiers
+                foreach (var dir in directory.GetDirectories())
+                {
+                    node.Nodes.Add(CreateDirectoryNode(dir));
+
+                }
+
+                // Ajouter les fichiers
+                foreach (var file in directory.GetFiles())
+                {
+                    var icon = Icon.ExtractAssociatedIcon(file.FullName);
+                    imageList1.Images.Add(icon);
+
+                    TreeNode fileNode = new TreeNode(file.Name);
+                    fileNode.ImageIndex = imageList1.Images.Count - 1;
+                    node.Nodes.Add(fileNode);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Ignore les dossiers non accessibles
+            }
+
+            return node;
         }
     }
 }

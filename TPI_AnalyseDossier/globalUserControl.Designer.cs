@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(globalUserControl));
             biggestFileLbl = new Label();
             biggestFolderLbl = new Label();
             avgFileSize = new Label();
@@ -42,6 +44,7 @@
             valueAvgFileSize = new Label();
             valueFileCounterLbl = new Label();
             valueFolderCounterLbl = new Label();
+            imageList1 = new ImageList(components);
             SuspendLayout();
             // 
             // biggestFileLbl
@@ -120,6 +123,7 @@
             treeView1.Name = "treeView1";
             treeView1.Size = new Size(121, 352);
             treeView1.TabIndex = 10;
+            treeView1.AfterSelect += treeView1_AfterSelect;
             // 
             // panelGraphic1
             // 
@@ -132,7 +136,7 @@
             // 
             valueBiggestFile.AutoSize = true;
             valueBiggestFile.Font = new Font("Segoe UI", 10F);
-            valueBiggestFile.Location = new Point(578, 84);
+            valueBiggestFile.Location = new Point(589, 75);
             valueBiggestFile.Name = "valueBiggestFile";
             valueBiggestFile.Size = new Size(0, 19);
             valueBiggestFile.TabIndex = 22;
@@ -141,7 +145,7 @@
             // 
             valueBiggestFolder.AutoSize = true;
             valueBiggestFolder.Font = new Font("Segoe UI", 10F);
-            valueBiggestFolder.Location = new Point(451, 84);
+            valueBiggestFolder.Location = new Point(460, 75);
             valueBiggestFolder.Name = "valueBiggestFolder";
             valueBiggestFolder.Size = new Size(0, 19);
             valueBiggestFolder.TabIndex = 21;
@@ -150,7 +154,7 @@
             // 
             valueAvgFileSize.AutoSize = true;
             valueAvgFileSize.Font = new Font("Segoe UI", 10F);
-            valueAvgFileSize.Location = new Point(307, 84);
+            valueAvgFileSize.Location = new Point(317, 75);
             valueAvgFileSize.Name = "valueAvgFileSize";
             valueAvgFileSize.Size = new Size(0, 19);
             valueAvgFileSize.TabIndex = 20;
@@ -159,7 +163,7 @@
             // 
             valueFileCounterLbl.AutoSize = true;
             valueFileCounterLbl.Font = new Font("Segoe UI", 10F);
-            valueFileCounterLbl.Location = new Point(253, 84);
+            valueFileCounterLbl.Location = new Point(266, 75);
             valueFileCounterLbl.Name = "valueFileCounterLbl";
             valueFileCounterLbl.Size = new Size(0, 19);
             valueFileCounterLbl.TabIndex = 19;
@@ -168,10 +172,17 @@
             // 
             valueFolderCounterLbl.AutoSize = true;
             valueFolderCounterLbl.Font = new Font("Segoe UI", 10F);
-            valueFolderCounterLbl.Location = new Point(193, 75);
+            valueFolderCounterLbl.Location = new Point(204, 75);
             valueFolderCounterLbl.Name = "valueFolderCounterLbl";
             valueFolderCounterLbl.Size = new Size(0, 19);
             valueFolderCounterLbl.TabIndex = 18;
+            // 
+            // imageList1
+            // 
+            imageList1.ColorDepth = ColorDepth.Depth32Bit;
+            imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
+            imageList1.TransparentColor = Color.Transparent;
+            imageList1.Images.SetKeyName(0, "folderIcon.png");
             // 
             // globalUserControl
             // 
@@ -193,6 +204,7 @@
             Controls.Add(panelGraphic1);
             Name = "globalUserControl";
             Size = new Size(731, 443);
+            Load += globalUserControl_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -213,5 +225,6 @@
         private Label valueAvgFileSize;
         private Label valueFileCounterLbl;
         private Label valueFolderCounterLbl;
+        private ImageList imageList1;
     }
 }
