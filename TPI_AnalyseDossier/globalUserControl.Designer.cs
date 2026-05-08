@@ -42,7 +42,7 @@
             // 
             // parcourirBtn
             // 
-            parcourirBtn.Location = new Point(636, 23);
+            parcourirBtn.Location = new Point(653, 23);
             parcourirBtn.Name = "parcourirBtn";
             parcourirBtn.Size = new Size(75, 23);
             parcourirBtn.TabIndex = 12;
@@ -75,7 +75,7 @@
             // 
             panelGraphic1.Location = new Point(232, 104);
             panelGraphic1.Name = "panelGraphic1";
-            panelGraphic1.Size = new Size(479, 249);
+            panelGraphic1.Size = new Size(496, 249);
             panelGraphic1.TabIndex = 9;
             // 
             // listView1
@@ -85,7 +85,7 @@
             listView1.Location = new Point(230, 49);
             listView1.Name = "listView1";
             listView1.Scrollable = false;
-            listView1.Size = new Size(481, 49);
+            listView1.Size = new Size(498, 49);
             listView1.TabIndex = 24;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.Details;

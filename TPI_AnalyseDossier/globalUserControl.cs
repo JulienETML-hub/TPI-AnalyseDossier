@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Linq;
+using System.Text.Json;
 namespace TPI_AnalyseDossier
 {
     public partial class globalUserControl : UserControl
@@ -25,12 +26,14 @@ namespace TPI_AnalyseDossier
             listView1.View = View.Details;
             listView1.Columns.Add("Dossier", 50);
             listView1.Columns.Add("Fichier", 50);
+            listView1.Columns.Add("Taille totale", 75);
             listView1.Columns.Add("Taille moyenne fichier", 130);
             listView1.Columns.Add("Plus grand dossier", 130);
             listView1.Columns.Add("Plus grand fichier", 130);
             ListViewItem item = new ListViewItem("26"); 
             item.SubItems.Add("252");                   
-            item.SubItems.Add("30,26Mo");                  
+            item.SubItems.Add("30,26Mo");
+            item.SubItems.Add("120,56Mo");
             item.SubItems.Add("Excel.exe");                   
             item.SubItems.Add("test.txt");
 
