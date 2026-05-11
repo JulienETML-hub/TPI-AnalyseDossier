@@ -22,7 +22,6 @@ namespace TPI_AnalyseDossier
         {
             InitializeComponent();
             InitChart();
-
             listView1.View = View.Details;
             listView1.Columns.Add("Dossier", 50);
             listView1.Columns.Add("Fichier", 50);
@@ -30,15 +29,15 @@ namespace TPI_AnalyseDossier
             listView1.Columns.Add("Taille moyenne fichier", 130);
             listView1.Columns.Add("Plus grand dossier", 130);
             listView1.Columns.Add("Plus grand fichier", 130);
-            ListViewItem item = new ListViewItem("26"); 
-            item.SubItems.Add("252");                   
+            ListViewItem item = new ListViewItem("26");
+            item.SubItems.Add("252");
             item.SubItems.Add("30,26Mo");
             item.SubItems.Add("120,56Mo");
-            item.SubItems.Add("Excel.exe");                   
+            item.SubItems.Add("Excel.exe");
             item.SubItems.Add("test.txt");
-
+            
             listView1.Items.Add(item);
-
+            
         }
 
         private void avgFileSize_Click(object sender, EventArgs e)
@@ -60,7 +59,18 @@ namespace TPI_AnalyseDossier
             dialog.ShowDialog();
             selectedPath = dialog.SelectedPath;
             pathLbl.Text = selectedPath;
-            LoadDirectory(selectedPath);
+             LoadDirectory(selectedPath);
+            int a = 1;
+            while (a == 1)
+            {
+                Thread.Sleep(1000);
+                loadingProgressBar.Value += 5;
+                if (loadingProgressBar.Value >= 100)
+                {
+                    loadingProgressBar.Visible = false;
+                    a = 2;
+                }
+            }
         }
         private void InitChart()
         {
@@ -77,6 +87,7 @@ namespace TPI_AnalyseDossier
             };
 
             panelGraphic1.Controls.Add(_pieChart);
+            _pieChart.LegendPosition = LiveChartsCore.Measure.LegendPosition.Right;
         }
 
         private void globalUserControl_Load(object sender, EventArgs e)
@@ -88,7 +99,7 @@ namespace TPI_AnalyseDossier
         {
 
         }
-        private void LoadDirectory(string path)
+        private async void LoadDirectory(string path)
         {
             treeView1.Nodes.Clear();
             if (path != null)
@@ -96,6 +107,13 @@ namespace TPI_AnalyseDossier
                 DirectoryInfo rootDir = new DirectoryInfo(path);
                 TreeNode rootNode = CreateDirectoryNode(rootDir);
 
+                if (loadingProgressBar.Value >= 100)
+                {
+                    loadingProgressBar.Visible = false;
+                    loadingLbl.Visible = false;
+
+                    
+                }
                 treeView1.Nodes.Add(rootNode);
             }
         }
@@ -103,6 +121,7 @@ namespace TPI_AnalyseDossier
         {
             TreeNode node = new TreeNode(directory.Name);
             treeView1.ImageList = imageList1;
+            
             try
             {
                 // Ajouter les dossiers
@@ -121,6 +140,7 @@ namespace TPI_AnalyseDossier
                     imageList1.Images.Add(icon);
 
                     TreeNode fileNode = new TreeNode(file.Name);
+                    fileNode.SelectedImageIndex = imageList1.Images.Count - 1;
                     fileNode.ImageIndex = imageList1.Images.Count - 1;
                     node.Nodes.Add(fileNode);
                 }
@@ -143,5 +163,11 @@ namespace TPI_AnalyseDossier
         {
 
         }
+
+        private void panelGraphic1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
     }
 }

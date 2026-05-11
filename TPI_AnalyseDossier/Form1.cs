@@ -10,9 +10,12 @@ namespace TPI_AnalyseDossier
         private PieChart _pieChart;
         private string selectedPath;
         private UserControl ctrl;
+
         public Form1()
         {
             InitializeComponent();
+            Theme.ApplyTheme(this);
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -84,6 +87,11 @@ namespace TPI_AnalyseDossier
             {
                 heavierFolderBtn.BackColor = Color.LightBlue;
             }
+        }
+
+        private void panelMainPnl_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

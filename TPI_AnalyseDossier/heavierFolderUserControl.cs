@@ -15,9 +15,24 @@ namespace TPI_AnalyseDossier
         public heavierFolderUserControl()
         {
             InitializeComponent();
+            Theme.ApplyTheme(this);
+            for (int i = 10; i >= 1; i--)
+            {
+                dataGridViewTopFolders.Rows.Add(
+                    $"folder{i}",
+                    $"{i * 10} MB",
+                    DateTime.Now.ToShortDateString(),
+                    @"C:\Test\folder" + i
+                );
+            }
         }
 
         private void heavierFolderUserControl_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridViewTopFolders_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

@@ -40,9 +40,10 @@
             // titleLbl
             // 
             titleLbl.AutoSize = true;
-            titleLbl.Location = new Point(71, 33);
+            titleLbl.Font = new Font("Segoe UI", 16F);
+            titleLbl.Location = new Point(174, 15);
             titleLbl.Name = "titleLbl";
-            titleLbl.Size = new Size(176, 15);
+            titleLbl.Size = new Size(327, 30);
             titleLbl.TabIndex = 0;
             titleLbl.Text = "Top 10 des fichiers les plus lourd";
             // 
@@ -55,7 +56,7 @@
             dataGridViewTopFiles.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewTopFiles.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewTopFiles.Columns.AddRange(new DataGridViewColumn[] { nameClm, sizeClm, latestModifyClm, pathClm });
-            dataGridViewTopFiles.Location = new Point(3, 80);
+            dataGridViewTopFiles.Location = new Point(3, 61);
             dataGridViewTopFiles.MultiSelect = false;
             dataGridViewTopFiles.Name = "dataGridViewTopFiles";
             dataGridViewTopFiles.ReadOnly = true;
@@ -69,24 +70,28 @@
             nameClm.HeaderText = "Nom";
             nameClm.Name = "nameClm";
             nameClm.ReadOnly = true;
+            nameClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // sizeClm
             // 
             sizeClm.HeaderText = "Taille";
             sizeClm.Name = "sizeClm";
             sizeClm.ReadOnly = true;
+            sizeClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // latestModifyClm
             // 
             latestModifyClm.HeaderText = "Dernière modification";
             latestModifyClm.Name = "latestModifyClm";
             latestModifyClm.ReadOnly = true;
+            latestModifyClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // pathClm
             // 
             pathClm.HeaderText = "Chemin";
             pathClm.Name = "pathClm";
             pathClm.ReadOnly = true;
+            pathClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // heavierFileUserControl
             // 
@@ -95,7 +100,8 @@
             Controls.Add(dataGridViewTopFiles);
             Controls.Add(titleLbl);
             Name = "heavierFileUserControl";
-            Size = new Size(813, 540);
+            Size = new Size(718, 540);
+            Load += heavierFileUserControl_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewTopFiles).EndInit();
             ResumeLayout(false);
             PerformLayout();
