@@ -125,14 +125,14 @@
             minimalSize.AutoSize = true;
             minimalSize.Location = new Point(118, 7);
             minimalSize.Name = "minimalSize";
-            minimalSize.Size = new Size(80, 15);
+            minimalSize.Size = new Size(120, 15);
             minimalSize.TabIndex = 6;
-            minimalSize.Text = "Taille minimal";
+            minimalSize.Text = "Taille minimal (en ko)";
             // 
             // nbElements
             // 
             nbElements.AutoSize = true;
-            nbElements.Location = new Point(271, 24);
+            nbElements.Location = new Point(244, 33);
             nbElements.Name = "nbElements";
             nbElements.Size = new Size(171, 15);
             nbElements.TabIndex = 7;
