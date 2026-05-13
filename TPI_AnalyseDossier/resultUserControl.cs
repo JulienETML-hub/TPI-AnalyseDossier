@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.DirectoryServices.ActiveDirectory;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -21,12 +22,12 @@ namespace TPI_AnalyseDossier
             {
                 dataGridViewResults.Rows.Add(
                     $"file{i}.txt",
-                    $"{i * 10} MB",
-                    DateTime.Now.ToShortDateString(),
+                    $"{i * 10} MO",
+                    DateTime.Now.ToString(),
                     @"C:\Test\file" + i + ".txt"
                 );
             }
-
+            dataGridViewResults.SelectionMode = DataGridViewSelectionMode.CellSelect;
             CheckedListBox clb = new CheckedListBox();
 
             clb.Items.AddRange(new object[] { ".txt", ".jpg", ".pdf" });

@@ -34,6 +34,7 @@
             latestModifyClm = new DataGridViewTextBoxColumn();
             pathClm = new DataGridViewTextBoxColumn();
             titleLbl = new Label();
+            pathAnalyzed = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridViewTopFolders).BeginInit();
             SuspendLayout();
             // 
@@ -49,8 +50,9 @@
             dataGridViewTopFolders.Columns.AddRange(new DataGridViewColumn[] { nameClm, sizeClm, latestModifyClm, pathClm });
             dataGridViewTopFolders.Location = new Point(3, 62);
             dataGridViewTopFolders.Name = "dataGridViewTopFolders";
+            dataGridViewTopFolders.ReadOnly = true;
             dataGridViewTopFolders.SelectionMode = DataGridViewSelectionMode.CellSelect;
-            dataGridViewTopFolders.Size = new Size(712, 386);
+            dataGridViewTopFolders.Size = new Size(712, 275);
             dataGridViewTopFolders.TabIndex = 0;
             dataGridViewTopFolders.CellContentClick += dataGridViewTopFolders_CellContentClick;
             // 
@@ -58,24 +60,28 @@
             // 
             nameClm.HeaderText = "Nom";
             nameClm.Name = "nameClm";
+            nameClm.ReadOnly = true;
             nameClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // sizeClm
             // 
             sizeClm.HeaderText = "Taille";
             sizeClm.Name = "sizeClm";
+            sizeClm.ReadOnly = true;
             sizeClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // latestModifyClm
             // 
             latestModifyClm.HeaderText = "Dernière modification";
             latestModifyClm.Name = "latestModifyClm";
+            latestModifyClm.ReadOnly = true;
             latestModifyClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // pathClm
             // 
             pathClm.HeaderText = "Chemin";
             pathClm.Name = "pathClm";
+            pathClm.ReadOnly = true;
             pathClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // titleLbl
@@ -88,10 +94,20 @@
             titleLbl.TabIndex = 1;
             titleLbl.Text = "Top 10 des dossiers les plus lourd";
             // 
+            // pathAnalyzed
+            // 
+            pathAnalyzed.AutoSize = true;
+            pathAnalyzed.Location = new Point(3, 340);
+            pathAnalyzed.Name = "pathAnalyzed";
+            pathAnalyzed.Size = new Size(136, 15);
+            pathAnalyzed.TabIndex = 2;
+            pathAnalyzed.Text = "Chemin analysé : C:\\Test";
+            // 
             // heavierFolderUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(pathAnalyzed);
             Controls.Add(titleLbl);
             Controls.Add(dataGridViewTopFolders);
             Name = "heavierFolderUserControl";
@@ -110,5 +126,6 @@
         private DataGridViewTextBoxColumn latestModifyClm;
         private DataGridViewTextBoxColumn pathClm;
         private Label titleLbl;
+        private Label pathAnalyzed;
     }
 }

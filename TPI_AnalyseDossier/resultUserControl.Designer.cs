@@ -104,7 +104,7 @@
             // 
             // minimalSizeNmr
             // 
-            minimalSizeNmr.Increment = new decimal(new int[] { 25, 0, 0, 0 });
+            minimalSizeNmr.Increment = new decimal(new int[] { 25, 0, 0, 65536 });
             minimalSizeNmr.Location = new Point(118, 25);
             minimalSizeNmr.Name = "minimalSizeNmr";
             minimalSizeNmr.Size = new Size(120, 23);
@@ -125,9 +125,9 @@
             minimalSize.AutoSize = true;
             minimalSize.Location = new Point(118, 7);
             minimalSize.Name = "minimalSize";
-            minimalSize.Size = new Size(120, 15);
+            minimalSize.Size = new Size(125, 15);
             minimalSize.TabIndex = 6;
-            minimalSize.Text = "Taille minimal (en ko)";
+            minimalSize.Text = "Taille minimal (en mo)";
             // 
             // nbElements
             // 

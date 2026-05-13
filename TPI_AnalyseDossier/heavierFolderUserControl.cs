@@ -25,6 +25,7 @@ namespace TPI_AnalyseDossier
                     @"C:\Test\folder" + i
                 );
             }
+            dataGridViewTopFolders.SelectionMode = DataGridViewSelectionMode.CellSelect;
         }
 
         private void heavierFolderUserControl_Load(object sender, EventArgs e)

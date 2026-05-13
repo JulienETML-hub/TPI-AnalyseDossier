@@ -26,6 +26,7 @@ namespace TPI_AnalyseDossier
                     @"C:\Test\file" + i + ".txt"
                 );
             }
+            dataGridViewTopFiles.SelectionMode = DataGridViewSelectionMode.CellSelect;
         }
         private void dataGridViewTopFiles_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {

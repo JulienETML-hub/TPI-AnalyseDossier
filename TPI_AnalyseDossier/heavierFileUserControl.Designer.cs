@@ -34,6 +34,7 @@
             sizeClm = new DataGridViewTextBoxColumn();
             latestModifyClm = new DataGridViewTextBoxColumn();
             pathClm = new DataGridViewTextBoxColumn();
+            pathAnalyzed = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridViewTopFiles).BeginInit();
             SuspendLayout();
             // 
@@ -61,7 +62,7 @@
             dataGridViewTopFiles.Name = "dataGridViewTopFiles";
             dataGridViewTopFiles.ReadOnly = true;
             dataGridViewTopFiles.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewTopFiles.Size = new Size(712, 386);
+            dataGridViewTopFiles.Size = new Size(712, 275);
             dataGridViewTopFiles.TabIndex = 1;
             dataGridViewTopFiles.CellContentClick += dataGridViewTopFiles_CellContentClick;
             // 
@@ -93,10 +94,20 @@
             pathClm.ReadOnly = true;
             pathClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
+            // pathAnalyzed
+            // 
+            pathAnalyzed.AutoSize = true;
+            pathAnalyzed.Location = new Point(3, 339);
+            pathAnalyzed.Name = "pathAnalyzed";
+            pathAnalyzed.Size = new Size(136, 15);
+            pathAnalyzed.TabIndex = 3;
+            pathAnalyzed.Text = "Chemin analysé : C:\\Test";
+            // 
             // heavierFileUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(pathAnalyzed);
             Controls.Add(dataGridViewTopFiles);
             Controls.Add(titleLbl);
             Name = "heavierFileUserControl";
@@ -115,5 +126,6 @@
         private DataGridViewTextBoxColumn sizeClm;
         private DataGridViewTextBoxColumn latestModifyClm;
         private DataGridViewTextBoxColumn pathClm;
+        private Label pathAnalyzed;
     }
 }

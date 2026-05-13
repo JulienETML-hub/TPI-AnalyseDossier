@@ -67,6 +67,7 @@
             pathLbl.Size = new Size(425, 23);
             pathLbl.TabIndex = 11;
             pathLbl.Text = "Aucun chemin sélectionné";
+            pathLbl.Click += pathLbl_Click;
             // 
             // treeView1
             // 

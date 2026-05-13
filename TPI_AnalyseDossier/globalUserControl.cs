@@ -33,11 +33,11 @@ namespace TPI_AnalyseDossier
             item.SubItems.Add("252");
             item.SubItems.Add("30,26Mo");
             item.SubItems.Add("120,56Mo");
-            item.SubItems.Add("Excel.exe");
+            item.SubItems.Add("Impots sauvegarde");
             item.SubItems.Add("test.txt");
-            
+
             listView1.Items.Add(item);
-            
+
         }
 
         private void avgFileSize_Click(object sender, EventArgs e)
@@ -59,7 +59,7 @@ namespace TPI_AnalyseDossier
             dialog.ShowDialog();
             selectedPath = dialog.SelectedPath;
             pathLbl.Text = selectedPath;
-             LoadDirectory(selectedPath);
+            LoadDirectory(selectedPath);
             int a = 1;
             while (a == 1)
             {
@@ -107,28 +107,28 @@ namespace TPI_AnalyseDossier
                 DirectoryInfo rootDir = new DirectoryInfo(path);
                 TreeNode rootNode = CreateDirectoryNode(rootDir);
 
-                if (loadingProgressBar.Value >= 100)
+                /*if (loadingProgressBar.Value >= 100)
                 {
                     loadingProgressBar.Visible = false;
                     loadingLbl.Visible = false;
 
-                    
+
                 }
-                treeView1.Nodes.Add(rootNode);
+                treeView1.Nodes.Add(rootNode);*/
             }
         }
         private TreeNode CreateDirectoryNode(DirectoryInfo directory)
         {
             TreeNode node = new TreeNode(directory.Name);
             treeView1.ImageList = imageList1;
-            
+
             try
             {
                 // Ajouter les dossiers
                 foreach (var dir in directory.GetDirectories())
                 {
                     TreeNode dirNode = CreateDirectoryNode(dir);
-                    dirNode.ImageIndex = 0;
+                    //dirNode.ImageIndex = 0;
                     node.Nodes.Add(dirNode);
 
                 }
@@ -136,12 +136,12 @@ namespace TPI_AnalyseDossier
                 // Ajouter les fichiers
                 foreach (var file in directory.GetFiles())
                 {
-                    var icon = Icon.ExtractAssociatedIcon(file.FullName);
-                    imageList1.Images.Add(icon);
+                    //var icon = Icon.ExtractAssociatedIcon(file.FullName);
+                    //imageList1.Images.Add(icon);
 
                     TreeNode fileNode = new TreeNode(file.Name);
-                    fileNode.SelectedImageIndex = imageList1.Images.Count - 1;
-                    fileNode.ImageIndex = imageList1.Images.Count - 1;
+                    //fileNode.SelectedImageIndex = imageList1.Images.Count - 1;
+                    //fileNode.ImageIndex = imageList1.Images.Count - 1;
                     node.Nodes.Add(fileNode);
                 }
 
@@ -169,5 +169,9 @@ namespace TPI_AnalyseDossier
 
         }
 
+        private void pathLbl_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
