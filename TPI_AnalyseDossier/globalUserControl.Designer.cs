@@ -35,6 +35,7 @@
             treeView1 = new TreeView();
             panelGraphic1 = new Panel();
             loadingProgressBar = new ProgressBar();
+            loadingLbl = new Label();
             listView1 = new ListView();
             imageList1 = new ImageList(components);
             exportPDFBtn = new Button();
@@ -44,7 +45,7 @@
             pathLblDetails = new Label();
             sizeLblDetails = new Label();
             latestModifyLbl = new Label();
-            loadingLbl = new Label();
+            panelGraphic1.SuspendLayout();
             SuspendLayout();
             // 
             // parcourirBtn
@@ -79,23 +80,38 @@
             treeView1.ShowRootLines = false;
             treeView1.Size = new Size(223, 417);
             treeView1.TabIndex = 10;
+            treeView1.BeforeExpand += treeView1_BeforeExpand;
             treeView1.AfterSelect += treeView1_AfterSelect;
+            treeView1.NodeMouseClick += treeView1_GetDetailsItem;
             // 
             // panelGraphic1
             // 
+            panelGraphic1.Controls.Add(loadingLbl);
             panelGraphic1.Location = new Point(232, 104);
             panelGraphic1.Name = "panelGraphic1";
             panelGraphic1.Size = new Size(546, 249);
             panelGraphic1.TabIndex = 9;
+            panelGraphic1.Visible = false;
             panelGraphic1.Paint += panelGraphic1_Paint;
             // 
             // loadingProgressBar
             // 
-            loadingProgressBar.Location = new Point(70, 352);
+            loadingProgressBar.Location = new Point(297, 65);
             loadingProgressBar.Name = "loadingProgressBar";
-            loadingProgressBar.Size = new Size(85, 21);
-            loadingProgressBar.TabIndex = 30;
-            loadingProgressBar.Value = 10;
+            loadingProgressBar.Size = new Size(151, 33);
+            loadingProgressBar.Style = ProgressBarStyle.Marquee;
+            loadingProgressBar.TabIndex = 7;
+            loadingProgressBar.Value = 9;
+            // 
+            // loadingLbl
+            // 
+            loadingLbl.AutoSize = true;
+            loadingLbl.Location = new Point(214, 94);
+            loadingLbl.Name = "loadingLbl";
+            loadingLbl.Size = new Size(151, 15);
+            loadingLbl.TabIndex = 31;
+            loadingLbl.Text = "Chargement des données...";
+            loadingLbl.UseWaitCursor = true;
             // 
             // listView1
             // 
@@ -180,21 +196,10 @@
             latestModifyLbl.TabIndex = 29;
             latestModifyLbl.Text = "Dernière modification : 04.05.2026 14:32";
             // 
-            // loadingLbl
-            // 
-            loadingLbl.AutoSize = true;
-            loadingLbl.Location = new Point(42, 334);
-            loadingLbl.Name = "loadingLbl";
-            loadingLbl.Size = new Size(151, 15);
-            loadingLbl.TabIndex = 31;
-            loadingLbl.Text = "Chargement des données...";
-            loadingLbl.UseWaitCursor = true;
-            // 
             // globalUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(loadingLbl);
             Controls.Add(loadingProgressBar);
             Controls.Add(latestModifyLbl);
             Controls.Add(sizeLblDetails);
@@ -210,6 +215,8 @@
             Name = "globalUserControl";
             Size = new Size(781, 443);
             Load += globalUserControl_Load;
+            panelGraphic1.ResumeLayout(false);
+            panelGraphic1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }

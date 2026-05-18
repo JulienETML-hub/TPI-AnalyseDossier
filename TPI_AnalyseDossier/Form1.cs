@@ -3,10 +3,12 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.SKCharts;
 using LiveChartsCore.SkiaSharpView.WinForms;
 using QuestPDF;
+
 namespace TPI_AnalyseDossier
 {
     public partial class Form1 : Form
     {
+                
         private PieChart _pieChart;
         private string selectedPath;
         private UserControl ctrl;
