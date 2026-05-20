@@ -51,7 +51,9 @@ namespace TPI_AnalyseDossier.Services
                             stats.LargestFilePath = file;
                         }
                     }
-                    catch { }
+                    catch {
+                        stats.IgnoredElements++;
+                    }
                 }
 
                 // sous-dossiers
@@ -73,7 +75,7 @@ namespace TPI_AnalyseDossier.Services
             }
             catch (UnauthorizedAccessException)
             {
-                // accès refusé → on ignore
+                stats.IgnoredElements++;
             }
 
             return currentDirSize;

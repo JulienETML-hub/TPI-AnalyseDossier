@@ -16,6 +16,8 @@ namespace TPI_AnalyseDossier.FileSystem
 
         public double LargestDirectorySize { get; set; }
         public string LargestDirectoryPath { get; set; }
+
+        public int IgnoredElements { get; set; }
         //public string LargestDirectoryName { get; set; }
         public Dictionary<string, int> FilesByExtension { get; set; } = new Dictionary<string, int>();
         public double AverageFileSize =>
