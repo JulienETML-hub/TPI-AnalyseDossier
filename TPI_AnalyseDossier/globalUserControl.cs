@@ -5,15 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using TPI_AnalyseDossier.FileSystem;
 using TPI_AnalyseDossier.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace TPI_AnalyseDossier
 {
     public partial class globalUserControl : UserControl
@@ -24,7 +26,7 @@ namespace TPI_AnalyseDossier
         public globalUserControl()
         {
             InitializeComponent();
-            InitChart();
+            //InitChart();
             listView1.View = View.Details;
             listView1.Columns.Add("Dossier", 50);
             listView1.Columns.Add("Fichier", 50);
@@ -33,22 +35,15 @@ namespace TPI_AnalyseDossier
             listView1.Columns.Add("Plus grand dossier", 130);
             listView1.Columns.Add("Plus grand fichier", 130);
 
-            panelGraphic1.Visible = false;
             loadingProgressBar.Style = ProgressBarStyle.Marquee;
-        }
-
-        private void avgFileSize_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void treeView1_AfterSelect_1(object sender, TreeViewEventArgs e)
-        {
-
-        }
-        private void initTree(string path)
-        {
-
+            loadingLbl.Visible = false;
+            loadingProgressBar.Visible = false;
+            loadingLbl.BringToFront();
+            panelGraphic1.SendToBack();
+            _pieChart = new PieChart();
+            panelGraphic1.Controls.Add(_pieChart);
+            _pieChart.Dock = DockStyle.Fill;
+            _pieChart.LegendPosition = LiveChartsCore.Measure.LegendPosition.Right;
         }
         private async void parcourirBtn_Click_2(object sender, EventArgs e)
         {
@@ -58,50 +53,31 @@ namespace TPI_AnalyseDossier
             pathLbl.Text = selectedPath;
             LoadStatistics(selectedPath);
             LoadDirectory(selectedPath);
-            /*int a = 1;
-            while (a == 1)
+
+        }
+        private void InitChart(Dictionary<string, int> filesByExtension)
+        {
+            // _pieChart.Series = PieSeries<Int>[] 
+            _pieChart.Series = filesByExtension
+            .OrderByDescending(file => file.Value) 
+            .Take(5) 
+            .Select(file => new PieSeries<int>
             {
-
-                if (loadingProgressBar.Value >= 100)
-                {
-                    loadingProgressBar.Visible = false;
-                    a = 2;
-                }
-            }*/
-        }
-        private void InitChart()
-        {
-            _pieChart = new PieChart
-            {
-                Series = new ISeries[]
-                {
-            new PieSeries<double> { Values = new double[] { 40 }, Name = "A" },
-            new PieSeries<double> { Values = new double[] { 30 }, Name = "B" },
-            new PieSeries<double> { Values = new double[] { 20 }, Name = "C" },
-            new PieSeries<double> { Values = new double[] { 10 }, Name = "D" }
-                },
-                Dock = DockStyle.Fill
-            };
-
-            panelGraphic1.Controls.Add(_pieChart);
-            _pieChart.LegendPosition = LiveChartsCore.Measure.LegendPosition.Right;
+                Values = new int[] { file.Value },
+                Name = file.Key
+            })
+            .ToArray();
         }
 
-        private void globalUserControl_Load(object sender, EventArgs e)
-        {
 
-        }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
-        }
         private async void LoadStatistics(string path)
         {
             loadingProgressBar.Style = ProgressBarStyle.Marquee;
             loadingProgressBar.Visible = true;
             loadingLbl.Visible = true;
-            panelGraphic1.Visible = false;
+            loadingLbl.BringToFront();
+
             StatisticsService statisticsService = new StatisticsService();
             DirectoryStats directoryStats = await Task.Run(() => statisticsService.ComputeStats(path));
             loadingLbl.Visible = false;
@@ -113,24 +89,13 @@ namespace TPI_AnalyseDossier
             item.SubItems.Add(directoryStats.AverageFileSize.ToString());
             item.SubItems.Add(directoryStats.LargestDirectoryPath.ToString());
             item.SubItems.Add(directoryStats.LargestFilePath.ToString());
-
+            InitChart(directoryStats.FilesByExtension);
+            Debug.Write("elements ignorés : " + directoryStats.IgnoredElements.ToString());
             listView1.Items.Add(item);
         }
         private async void LoadDirectory(string path)
         {
-                
             InitTreeview(path);
-
-            /*if (loadingProgressBar.Value >= 100)
-             * 
-            {
-                loadingProgressBar.Visible = false;
-                loadingLbl.Visible = false;
-
-
-            }
-            treeView1.Nodes.Add(rootNode);*/
-
         }
         private void InitTreeview(string rootPath)
         {
@@ -138,7 +103,6 @@ namespace TPI_AnalyseDossier
             TreeNode root = new TreeNode(rootPath);
             root.Tag = rootPath;
 
-            // fake child pour afficher la flèche
             root.Nodes.Add("loading...");
 
             treeView1.Nodes.Add(root);
@@ -172,7 +136,6 @@ namespace TPI_AnalyseDossier
                     // fichiers
                     foreach (var file in Directory.EnumerateFiles(path))
                     {
-
                         TreeNode fileNode = new TreeNode(Path.GetFileName(file));
                         fileNode.Tag = file;
                         loadingLbl.Text = fileNode.Tag.ToString();
@@ -186,33 +149,6 @@ namespace TPI_AnalyseDossier
                 loadingLbl.Text = "";
             }
         }
-
-
-        private void folderCounterLbl_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panelGraphic1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void pathLbl_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-
-        }
-
         private void treeView1_GetDetailsItem(object sender, TreeNodeMouseClickEventArgs e)
         {
             string path = e.Node.Tag.ToString();
@@ -222,9 +158,9 @@ namespace TPI_AnalyseDossier
         }
         private void changeUIDetails(FileSystemItem fileSystemItem)
         {
-            nameLbl.Text = "Nom : "+fileSystemItem.Name;
+            nameLbl.Text = "Nom : " + fileSystemItem.Name;
             pathLblDetails.Text = "Chemin : " + fileSystemItem.Path;
-            sizeLblDetails.Text = "Taille : " + fileSystemItem.Size +" Ko";
+            sizeLblDetails.Text = "Taille : " + fileSystemItem.Size + " Ko";
             latestModifyLbl.Text = "Dernière modification : " + fileSystemItem.LastModify.ToString();
 
 
@@ -244,5 +180,6 @@ namespace TPI_AnalyseDossier
                 throw new FileNotFoundException("Le chemin n'existe pas", path);
             }
         }
+
     }
 }
