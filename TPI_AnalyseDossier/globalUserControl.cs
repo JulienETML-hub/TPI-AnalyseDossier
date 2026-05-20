@@ -20,9 +20,12 @@ namespace TPI_AnalyseDossier
 {
     public partial class globalUserControl : UserControl
     {
+
         private FileSystemItem selectedItem;
         private PieChart _pieChart;
-        private string selectedPath;
+        public string selectedPath;
+        public event Action<string> DataReadyPath;
+        public event Action<DirectoryStats> DataReadyStats;
         public globalUserControl()
         {
             InitializeComponent();
@@ -34,7 +37,6 @@ namespace TPI_AnalyseDossier
             listView1.Columns.Add("Taille moyenne fichier", 130);
             listView1.Columns.Add("Plus grand dossier", 130);
             listView1.Columns.Add("Plus grand fichier", 130);
-
             loadingProgressBar.Style = ProgressBarStyle.Marquee;
             loadingLbl.Visible = false;
             loadingProgressBar.Visible = false;
@@ -44,20 +46,66 @@ namespace TPI_AnalyseDossier
             panelGraphic1.Controls.Add(_pieChart);
             _pieChart.Dock = DockStyle.Fill;
             _pieChart.LegendPosition = LiveChartsCore.Measure.LegendPosition.Right;
+            
+
         }
         private async void parcourirBtn_Click_2(object sender, EventArgs e)
         {
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             dialog.ShowDialog();
-            selectedPath = dialog.SelectedPath;
-            pathLbl.Text = selectedPath;
-            LoadStatistics(selectedPath);
-            LoadDirectory(selectedPath);
-
+            if (dialog.SelectedPath != null)
+            {
+                clearData();
+                this.selectedPath = dialog.SelectedPath;
+            }
+            pathSelected(this.selectedPath);
+            
         }
+        private async void pathSelected(string selectedpath)
+        {
+            loadingProgressBar.Visible = true;
+            loadingLbl.Visible = true;
+            panelGraphic1.Visible = true;
+            panelGraphic1.SendToBack();
+            pathLbl.Text = this.selectedPath;
+            DataReadyPath?.Invoke(this.selectedPath);
+            LoadStatistics(this.selectedPath);
+            LoadDirectory(this.selectedPath);
+        }
+        private void clearData()
+        {
+            // 🔹 Reset données internes
+            selectedPath = null;
+            selectedItem = null;
+
+            // 🔹 Reset labels principaux
+            pathLbl.Text = "";
+            nameLbl.Text = "Nom :";
+            pathLblDetails.Text = "Chemin :";
+            sizeLblDetails.Text = "Taille :";
+            latestModifyLbl.Text = "Dernière modification :";
+
+            // 🔹 Reset ListView (stats)
+            listView1.Items.Clear();
+
+            // 🔹 Reset TreeView
+            treeView1.Nodes.Clear();
+
+            // 🔹 Reset chart
+            _pieChart.Series = Array.Empty<ISeries>();
+
+            // 🔹 Reset loading UI
+            loadingProgressBar.Visible = false;
+            loadingLbl.Visible = false;
+
+            // 🔹 Reset affichage panel graphique
+            panelGraphic1.Visible = false;
+            panelGraphic1.SendToBack();
+        }
+
         private void InitChart(Dictionary<string, int> filesByExtension)
         {
-            // _pieChart.Series = PieSeries<Int>[] 
+            // _pieChart.Series est de type : PieSeries<Int>[] 
             _pieChart.Series = filesByExtension
             .OrderByDescending(file => file.Value) 
             .Take(5) 
@@ -80,9 +128,15 @@ namespace TPI_AnalyseDossier
 
             StatisticsService statisticsService = new StatisticsService();
             DirectoryStats directoryStats = await Task.Run(() => statisticsService.ComputeStats(path));
+            DataReadyStats?.Invoke(directoryStats);
             loadingLbl.Visible = false;
             loadingProgressBar.Visible = false;
             panelGraphic1.Visible = true;
+            dataUILoad(directoryStats);
+            
+        }
+        private async void dataUILoad(DirectoryStats directoryStats)
+        {
             ListViewItem item = new ListViewItem(directoryStats.DirectoryCount.ToString());
             item.SubItems.Add(directoryStats.FileCount.ToString());
             item.SubItems.Add(directoryStats.TotalSize.ToString());
@@ -95,7 +149,7 @@ namespace TPI_AnalyseDossier
         }
         private async void LoadDirectory(string path)
         {
-            InitTreeview(path);
+            InitTreeview(this.selectedPath);
         }
         private void InitTreeview(string rootPath)
         {
@@ -127,7 +181,6 @@ namespace TPI_AnalyseDossier
                         TreeNode child = new TreeNode(Path.GetFileName(dir));
                         child.Tag = dir;
 
-                        // permet d’avoir la flèche expand
                         child.Nodes.Add("loading...");
 
                         node.Nodes.Add(child);
@@ -138,7 +191,6 @@ namespace TPI_AnalyseDossier
                     {
                         TreeNode fileNode = new TreeNode(Path.GetFileName(file));
                         fileNode.Tag = file;
-                        loadingLbl.Text = fileNode.Tag.ToString();
                         node.Nodes.Add(fileNode);
                     }
                 }
@@ -146,7 +198,6 @@ namespace TPI_AnalyseDossier
                 {
                     node.Nodes.Add("Accès refusé");
                 }
-                loadingLbl.Text = "";
             }
         }
         private void treeView1_GetDetailsItem(object sender, TreeNodeMouseClickEventArgs e)
@@ -154,8 +205,9 @@ namespace TPI_AnalyseDossier
             string path = e.Node.Tag.ToString();
             FileSystemItem itemSelected = CreateItem(path);
             changeUIDetails(itemSelected);
-
+           
         }
+       
         private void changeUIDetails(FileSystemItem fileSystemItem)
         {
             nameLbl.Text = "Nom : " + fileSystemItem.Name;
@@ -178,6 +230,19 @@ namespace TPI_AnalyseDossier
             else
             {
                 throw new FileNotFoundException("Le chemin n'existe pas", path);
+            }
+        }
+        public void LoadData(string selectedPath, DirectoryStats directoryStats)
+        {
+            if (selectedPath != null)
+            {
+                this.selectedPath = selectedPath;
+                pathLbl.Text = selectedPath;
+                InitTreeview(selectedPath);
+            }
+            if (directoryStats != null)
+            {
+                dataUILoad(directoryStats);
             }
         }
 

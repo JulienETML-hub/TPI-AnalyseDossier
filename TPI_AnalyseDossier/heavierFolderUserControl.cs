@@ -12,6 +12,7 @@ namespace TPI_AnalyseDossier
 {
     public partial class heavierFolderUserControl : UserControl
     {
+        private string selectedPath;
         public heavierFolderUserControl()
         {
             InitializeComponent();
@@ -36,6 +37,10 @@ namespace TPI_AnalyseDossier
         private void dataGridViewTopFolders_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+        public void LoadData(string selectedPath)
+        {
+            this.selectedPath = selectedPath;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace TPI_AnalyseDossier
 {
     public partial class heavierFileUserControl : UserControl
     {
+        private string selectedPath;
         public heavierFileUserControl()
         {
             InitializeComponent();
@@ -36,6 +37,10 @@ namespace TPI_AnalyseDossier
         private void heavierFileUserControl_Load(object sender, EventArgs e)
         {
 
+        }
+        public void LoadData(string selectedPath)
+        {
+            this.selectedPath = selectedPath;
         }
     }
 }

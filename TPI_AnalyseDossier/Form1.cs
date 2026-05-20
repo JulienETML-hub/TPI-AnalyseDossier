@@ -3,6 +3,7 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.SKCharts;
 using LiveChartsCore.SkiaSharpView.WinForms;
 using QuestPDF;
+using TPI_AnalyseDossier.FileSystem;
 
 namespace TPI_AnalyseDossier
 {
@@ -11,20 +12,29 @@ namespace TPI_AnalyseDossier
                 
         private PieChart _pieChart;
         private string selectedPath;
+        private DirectoryStats directoryStats;
         private UserControl ctrl;
 
         public Form1()
         {
             InitializeComponent();
             Theme.ApplyTheme(this);
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ctrl = new globalUserControl();
+            var ctrl = new globalUserControl();
+            ctrl.DataReadyPath += (data) =>
+            {
+                this.selectedPath = data;
+            };
+            ctrl.DataReadyStats += (data) =>
+            {
+                this.directoryStats = data;
+            };
             LoadControl(ctrl);
             backgroundSelection(ctrl);
+
 
         }
 
@@ -33,35 +43,53 @@ namespace TPI_AnalyseDossier
         {
             panelMainPnl.Controls.Clear();
             control.Dock = DockStyle.Fill;
+            
             panelMainPnl.Controls.Add(control);
+            
         }
 
         private void globalBtn_Click(object sender, EventArgs e)
         {
-            ctrl = new globalUserControl();
+            var ctrl = new globalUserControl();
+            ctrl.DataReadyPath += (data) =>
+            {
+                this.selectedPath = data;
+            };
+            ctrl.DataReadyStats += (data) =>
+            {
+                this.directoryStats = data;
+            };
+            ctrl.LoadData(this.selectedPath, this.directoryStats);
+
             LoadControl(ctrl);
             backgroundSelection(ctrl);
-
+            
 
         }
 
         private void resultBtn_Click(object sender, EventArgs e)
         {
-            ctrl = new resultUserControl();
+            var ctrl = new resultUserControl();
+            ctrl.LoadData(this.selectedPath, this.directoryStats);
             LoadControl(ctrl);
             backgroundSelection(ctrl);
-
+            
         }
         private void heavierFileBtn_Click(object sender, EventArgs e)
         {
 
-            ctrl = new heavierFileUserControl();
+            var ctrl = new heavierFileUserControl();
+            ctrl.LoadData(this.selectedPath);
+
             LoadControl(ctrl);
             backgroundSelection(ctrl);
         }
         private void heavierFolderBtn_Click(object sender, EventArgs e)
         {
-            ctrl = new heavierFolderUserControl();
+
+            var ctrl = new heavierFolderUserControl();
+            ctrl.LoadData(this.selectedPath);
+
             LoadControl(ctrl);
             backgroundSelection(ctrl);
 
@@ -95,5 +123,6 @@ namespace TPI_AnalyseDossier
         {
 
         }
-    }
+
+}
 }

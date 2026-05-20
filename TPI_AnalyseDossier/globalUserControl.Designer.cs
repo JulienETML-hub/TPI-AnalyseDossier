@@ -34,8 +34,8 @@
             pathLbl = new Label();
             treeView1 = new TreeView();
             panelGraphic1 = new Panel();
-            loadingLbl = new Label();
             loadingProgressBar = new ProgressBar();
+            loadingLbl = new Label();
             listView1 = new ListView();
             imageList1 = new ImageList(components);
             exportPDFBtn = new Button();
@@ -80,6 +80,7 @@
             treeView1.Size = new Size(223, 417);
             treeView1.TabIndex = 10;
             treeView1.BeforeExpand += treeView1_BeforeExpand;
+            treeView1.NodeMouseClick += treeView1_GetDetailsItem;
             // 
             // panelGraphic1
             // 
@@ -89,7 +90,15 @@
             panelGraphic1.Name = "panelGraphic1";
             panelGraphic1.Size = new Size(546, 249);
             panelGraphic1.TabIndex = 9;
-            panelGraphic1.Visible = Visible;
+            // 
+            // loadingProgressBar
+            // 
+            loadingProgressBar.Location = new Point(204, 108);
+            loadingProgressBar.Name = "loadingProgressBar";
+            loadingProgressBar.Size = new Size(151, 33);
+            loadingProgressBar.Style = ProgressBarStyle.Marquee;
+            loadingProgressBar.TabIndex = 7;
+            loadingProgressBar.Value = 9;
             // 
             // loadingLbl
             // 
@@ -100,15 +109,6 @@
             loadingLbl.TabIndex = 31;
             loadingLbl.Text = "Chargement des données...";
             loadingLbl.UseWaitCursor = true;
-            // 
-            // loadingProgressBar
-            // 
-            loadingProgressBar.Location = new Point(204, 108);
-            loadingProgressBar.Name = "loadingProgressBar";
-            loadingProgressBar.Size = new Size(151, 33);
-            loadingProgressBar.Style = ProgressBarStyle.Marquee;
-            loadingProgressBar.TabIndex = 7;
-            loadingProgressBar.Value = 9;
             // 
             // listView1
             // 
@@ -208,7 +208,7 @@
             Controls.Add(treeView1);
             Controls.Add(panelGraphic1);
             Name = "globalUserControl";
-            Size = new Size(781, 443);
+            Size = new Size(796, 451);
             panelGraphic1.ResumeLayout(false);
             panelGraphic1.PerformLayout();
             ResumeLayout(false);

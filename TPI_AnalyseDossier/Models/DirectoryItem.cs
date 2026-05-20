@@ -2,27 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
+using TPI_AnalyseDossier.Services;
 namespace TPI_AnalyseDossier.FileSystem
 {
     class DirectoryItem : FileSystemItem
     {
         public List<FileSystemItem> Children { get; set; } = new List<FileSystemItem>();
+        // Constructor (sans taille
         public DirectoryItem(string path) : base(path)
         {
             LastModify = Directory.GetLastWriteTime(path);
             Size = 0;
-            /*var options = new EnumerationOptions
-            {
-                IgnoreInaccessible = true,
-                RecurseSubdirectories = true
-            };
-
-            foreach (var file in Directory.EnumerateFiles(path, "*", options))
-            {
-                Size += new FileInfo(file).Length / (1024.0 * 1024.0);
-            }*/
-
         }
+        // Constructor avec taille total du dossier (très très energivores pour seulement la taille du dossier, je le garde sur le coté pr linstant)
         public DirectoryItem(string path, bool full) : base(path)
         {
             LastModify = Directory.GetLastWriteTime(path);
@@ -53,7 +45,7 @@ namespace TPI_AnalyseDossier.FileSystem
                 child is FileItem f ? f.Size :
                 ((DirectoryItem)child).GetTotalSize()
             );
-            return sum / (1024.0 * 1024.0);
+            return FormatService.ConvertToMo(sum);
         }
        
     }

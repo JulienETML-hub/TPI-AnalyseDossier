@@ -2,44 +2,32 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.DirectoryServices.ActiveDirectory;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TPI_AnalyseDossier.FileSystem;
+using TPI_AnalyseDossier.Services;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace TPI_AnalyseDossier
 {
     public partial class resultUserControl : UserControl
     {
+        DirectoryStats directoryStats;
+        private string selectedPath = "test";
+        private CheckedListBox clb = new CheckedListBox();
         public resultUserControl()
         {
+
             InitializeComponent();
             Theme.ApplyTheme(this);
-            for (int i = 250; i >= 1; i--)
-            {
-                dataGridViewResults.Rows.Add(
-                    $"file{i}.txt",
-                    $"{i * 10} MO",
-                    DateTime.Now.ToString(),
-                    @"C:\Test\file" + i + ".txt"
-                );
-            }
+
             dataGridViewResults.SelectionMode = DataGridViewSelectionMode.CellSelect;
-            CheckedListBox clb = new CheckedListBox();
 
-            clb.Items.AddRange(new object[] { ".txt", ".jpg", ".pdf" });
-
-            ToolStripDropDown dropDown = new ToolStripDropDown();
-            ToolStripControlHost host = new ToolStripControlHost(clb);
-            dropDown.Items.Add(host);
-
-            comboBox1.Click += (s, e) =>
-            {
-                dropDown.Show(comboBox1, 0, comboBox1.Height);
-            };
 
             minimalSizeNmr.Minimum = 0;
             minimalSizeNmr.Maximum = 1000;
@@ -69,6 +57,58 @@ namespace TPI_AnalyseDossier
 
         private void dataGridViewResults_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+
+        }
+
+        private async void searchBtn_Click(object sender, EventArgs e)
+        {
+            DatasService datasService = new DatasService();
+            //FileSystemItem fileSystemItem = new FileItem("C:\\Users\\px50vpm\\Documents\\GitHub\\TPI-AnalyseDossier\\README.md");
+            FileSystemItem[] file = await datasService.DatasServiceSearch(selectedPath, clb.CheckedItems.Cast<string>().ToArray());
+            pathLbl.Text = selectedPath;
+            Debug.WriteLine("Dans searchBtnClick");
+            Debug.WriteLine("1");
+
+            foreach (FileSystemItem item in file)
+            {
+
+                Debug.WriteLine("Dans foreach avant");
+
+                insertElementIntoDataGrid(item);
+                Debug.WriteLine("Dans foreach aprèsé");
+
+            }
+            Debug.WriteLine("1");
+        }
+        private void insertElementIntoDataGrid(FileSystemItem fileSystemItem)
+        {
+            Debug.WriteLine("12");
+            dataGridViewResults.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, fileSystemItem.Path);
+
+
+
+
+        }
+        public void LoadData(string selectedPath, DirectoryStats directoryStats)
+        {
+            this.selectedPath = selectedPath;
+            pathLbl.Text = selectedPath;
+            this.directoryStats = directoryStats;
+            if (directoryStats != null)
+            {
+                
+                string[] extensionList = directoryStats.FilesByExtension.Keys.Cast<string>().ToArray();
+                clb.Items.AddRange(extensionList);
+
+                ToolStripDropDown dropDown = new ToolStripDropDown();
+                ToolStripControlHost host = new ToolStripControlHost(clb);
+                dropDown.Items.Add(host);
+                pathLbl.Text = selectedPath;
+                comboBox1.Click += (s, e) =>
+                {
+                    dropDown.Show(comboBox1, 0, comboBox1.Height);
+                };
+            }
 
         }
     }

@@ -39,6 +39,8 @@
             searchLbl = new Label();
             minimalSize = new Label();
             nbElements = new Label();
+            searchBtn = new Button();
+            pathLbl = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridViewResults).BeginInit();
             ((System.ComponentModel.ISupportInitialize)minimalSizeNmr).BeginInit();
             SuspendLayout();
@@ -138,10 +140,31 @@
             nbElements.TabIndex = 7;
             nbElements.Text = "Nombre d'éléments totals : 325";
             // 
+            // searchBtn
+            // 
+            searchBtn.Location = new Point(206, 416);
+            searchBtn.Name = "searchBtn";
+            searchBtn.Size = new Size(75, 23);
+            searchBtn.TabIndex = 8;
+            searchBtn.Text = "button1";
+            searchBtn.UseVisualStyleBackColor = true;
+            searchBtn.Click += searchBtn_Click;
+            // 
+            // pathLbl
+            // 
+            pathLbl.AutoSize = true;
+            pathLbl.Location = new Point(302, 15);
+            pathLbl.Name = "pathLbl";
+            pathLbl.Size = new Size(38, 15);
+            pathLbl.TabIndex = 9;
+            pathLbl.Text = "label1";
+            // 
             // resultUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(pathLbl);
+            Controls.Add(searchBtn);
             Controls.Add(nbElements);
             Controls.Add(minimalSize);
             Controls.Add(searchLbl);
@@ -171,5 +194,7 @@
         private Label searchLbl;
         private Label minimalSize;
         private Label nbElements;
+        private Button searchBtn;
+        private Label pathLbl;
     }
 }
