@@ -10,67 +10,60 @@ namespace TPI_AnalyseDossier.Services
 {
     public class DatasService
     {
+
         public DatasService() { }
-        public async Task<FileSystemItem[]> DatasServiceSearch(string path, string[] extension, bool sizeAscending/*, double minimalSize, string researchString*/)
+        private async Task<string[]> SearchSubDirectory(string path)
         {
-            //try
-            //{
+            return Directory.EnumerateDirectories(path).ToArray();
+        }
+        public async Task<FileSystemItem[]> DatasServiceSearch(string path, string[] extension, int minimalSize, bool? sortAscending = null, string sortBy = "noSort")/*, double minimalSize, string researchString*/
+        {
             FileSystemItem[] files;
-            Debug.WriteLine("Avant enumeratesFiles");
             var options = new EnumerationOptions
             {
-                IgnoreInaccessible = true,
-                RecurseSubdirectories = true,
-               
+                RecurseSubdirectories = false,
             };
+            /*foreach (item in SearchSubDirectory(path)) {
+            }
+            ;*/
             var result = Directory.EnumerateFiles(path, "*", options)
             .Select(p => new FileInfo(p))
-            .Where(f => f.Length >= 10 && extension.Contains(f.Extension))
-            .OrderBy(f=> f.Length, ) 
-            // TROUVER UN MOYEN CLEAN PR TRIER DE TOUTES LES MANIERES SOUHAITö (il ny a pas de paramètre à orderby pr ca)
-            .Take(10);
-            Debug.WriteLine("Avant select");
-            files = result.Select(file => new FileItem(file.FullName)).ToArray();
-            Debug.WriteLine("Avant return");
-
-            return files;
-            /* fichiers du dossier courant
-            foreach (var file in Directory.EnumerateFiles(path))
+            .Where(f => f.Length >= minimalSize &&
+            (extension.Contains(f.Extension) || extension.Length == 0));
+            if (sortAscending == true)
             {
-
-                try
+                switch (sortBy)
                 {
-                    // En Mo
-                    double size = new FileInfo(file).Length / (1024.0 lo* 1024.0);
-                    string ext = Path.GetExtension(file).ToLower();
+                    case "name":
+                        result = result.OrderBy(f => f.Name);
+                        break;
+                    case "size":
+                        result = result.OrderBy(f => f.Length);
 
-                    if (string.IsNullOrEmpty(ext))
-                        ext = "sans extension";
+                        break;
+                    case "date":
+                        result = result.OrderBy(f => f.LastWriteTime);
+                        break;
 
                 }
-                catch
+            } 
+            else if (sortAscending == false)
+            {
+                switch (sortBy)
                 {
+                    case "name":
+                        result = result.OrderByDescending(f => f.Name);
+                        break;
+                    case "size":
+                        result = result.OrderByDescending(f => f.Length);
 
+                        break;
+                    case "date":
+                        result = result.OrderByDescending(f => f.LastWriteTime);
+                        break;
                 }
-            }
-
-            // sous-dossiers
-            foreach (var dir in Directory.EnumerateDirectories(path))
-            {
-
-            }
-
-            // vérifier si ce dossier est le plus gros
-            if (
-              )
-            {
-
-            }*/
-            
-            /* }
-            catch (UnauthorizedAccessException)
-            {
-            }*/
+                }
+            return result.Take(13).Select(file => new FileItem(file.FullName)).ToArray();
 
         }
     }

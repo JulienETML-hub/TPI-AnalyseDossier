@@ -64,7 +64,7 @@ namespace TPI_AnalyseDossier
         {
             DatasService datasService = new DatasService();
             //FileSystemItem fileSystemItem = new FileItem("C:\\Users\\px50vpm\\Documents\\GitHub\\TPI-AnalyseDossier\\README.md");
-            FileSystemItem[] file = await datasService.DatasServiceSearch(selectedPath, clb.CheckedItems.Cast<string>().ToArray());
+            FileSystemItem[] file = await datasService.DatasServiceSearch(selectedPath, clb.CheckedItems.Cast<string>().ToArray(), sortBy: "size", minimalSize: 0, sortAscending: false);
             pathLbl.Text = selectedPath;
             Debug.WriteLine("Dans searchBtnClick");
             Debug.WriteLine("1");
