@@ -8,7 +8,8 @@ namespace TPI_AnalyseDossier.Services
     {
         public static double ConvertToMo(double data)
         {
-            return data / (1024.0 * 1024.0);
+            //return data / (1024.0 * 1024.0);
+            return Math.Round(data / 1024,2);
         }
     }
 }

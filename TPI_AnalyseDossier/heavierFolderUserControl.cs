@@ -22,7 +22,7 @@ namespace TPI_AnalyseDossier
                 dataGridViewTopFolders.Rows.Add(
                     $"folder{i}",
                     $"{i * 10} MB",
-                    DateTime.Now.ToShortDateString(),
+                    DateTime.Now,
                     @"C:\Test\folder" + i
                 );
             }

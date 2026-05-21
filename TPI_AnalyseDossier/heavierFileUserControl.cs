@@ -23,7 +23,7 @@ namespace TPI_AnalyseDossier
                 dataGridViewTopFiles.Rows.Add(
                     $"file{i}.txt",
                     $"{i * 10} MB",
-                    DateTime.Now.ToShortDateString(),
+                    DateTime.Now,
                     @"C:\Test\file" + i + ".txt"
                 );
             }

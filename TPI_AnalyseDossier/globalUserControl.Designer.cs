@@ -50,7 +50,7 @@
             // 
             // parcourirBtn
             // 
-            parcourirBtn.Location = new Point(703, 19);
+            parcourirBtn.Location = new Point(784, 19);
             parcourirBtn.Name = "parcourirBtn";
             parcourirBtn.Size = new Size(75, 23);
             parcourirBtn.TabIndex = 12;
@@ -65,7 +65,7 @@
             pathLbl.Font = new Font("Segoe UI", 9F);
             pathLbl.Location = new Point(230, 23);
             pathLbl.Name = "pathLbl";
-            pathLbl.Size = new Size(425, 23);
+            pathLbl.Size = new Size(548, 23);
             pathLbl.TabIndex = 11;
             pathLbl.Text = "Aucun chemin sélectionné";
             // 
@@ -77,7 +77,7 @@
             treeView1.ShowLines = false;
             treeView1.ShowPlusMinus = false;
             treeView1.ShowRootLines = false;
-            treeView1.Size = new Size(223, 417);
+            treeView1.Size = new Size(221, 466);
             treeView1.TabIndex = 10;
             treeView1.BeforeExpand += treeView1_BeforeExpand;
             treeView1.NodeMouseClick += treeView1_GetDetailsItem;
@@ -88,7 +88,7 @@
             panelGraphic1.Controls.Add(loadingLbl);
             panelGraphic1.Location = new Point(232, 104);
             panelGraphic1.Name = "panelGraphic1";
-            panelGraphic1.Size = new Size(546, 249);
+            panelGraphic1.Size = new Size(627, 296);
             panelGraphic1.TabIndex = 9;
             // 
             // loadingProgressBar
@@ -117,7 +117,7 @@
             listView1.Location = new Point(230, 49);
             listView1.Name = "listView1";
             listView1.Scrollable = false;
-            listView1.Size = new Size(548, 49);
+            listView1.Size = new Size(629, 49);
             listView1.TabIndex = 24;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.Details;
@@ -134,7 +134,7 @@
             exportPDFBtn.BackColor = Color.RosyBrown;
             exportPDFBtn.BackgroundImage = (Image)resources.GetObject("exportPDFBtn.BackgroundImage");
             exportPDFBtn.BackgroundImageLayout = ImageLayout.Stretch;
-            exportPDFBtn.Location = new Point(728, 384);
+            exportPDFBtn.Location = new Point(784, 406);
             exportPDFBtn.Name = "exportPDFBtn";
             exportPDFBtn.Size = new Size(50, 52);
             exportPDFBtn.TabIndex = 23;
@@ -145,12 +145,13 @@
             imageList2.ColorDepth = ColorDepth.Depth32Bit;
             imageList2.ImageStream = (ImageListStreamer)resources.GetObject("imageList2.ImageStream");
             imageList2.TransparentColor = Color.Transparent;
-            imageList2.Images.SetKeyName(0, "pdfIcon.png");
+            imageList2.Images.SetKeyName(0, "folderIcon.png");
+            imageList2.Images.SetKeyName(1, "pdfIcon.png");
             // 
             // detailsTitleLbl
             // 
             detailsTitleLbl.AutoSize = true;
-            detailsTitleLbl.Location = new Point(232, 358);
+            detailsTitleLbl.Location = new Point(230, 403);
             detailsTitleLbl.Name = "detailsTitleLbl";
             detailsTitleLbl.Size = new Size(88, 15);
             detailsTitleLbl.TabIndex = 25;
@@ -159,7 +160,7 @@
             // nameLbl
             // 
             nameLbl.AutoSize = true;
-            nameLbl.Location = new Point(232, 373);
+            nameLbl.Location = new Point(230, 418);
             nameLbl.Name = "nameLbl";
             nameLbl.Size = new Size(253, 15);
             nameLbl.TabIndex = 26;
@@ -168,16 +169,17 @@
             // pathLblDetails
             // 
             pathLblDetails.AutoSize = true;
-            pathLblDetails.Location = new Point(233, 418);
+            pathLblDetails.Font = new Font("Segoe UI", 7F);
+            pathLblDetails.Location = new Point(231, 466);
             pathLblDetails.Name = "pathLblDetails";
-            pathLblDetails.Size = new Size(370, 15);
+            pathLblDetails.Size = new Size(303, 12);
             pathLblDetails.TabIndex = 27;
             pathLblDetails.Text = "Chemin : C:\\Users\\px50vpm\\Documents\\GitHub\\TPI-AnalyseDossier";
             // 
             // sizeLblDetails
             // 
             sizeLblDetails.AutoSize = true;
-            sizeLblDetails.Location = new Point(233, 388);
+            sizeLblDetails.Location = new Point(230, 433);
             sizeLblDetails.Name = "sizeLblDetails";
             sizeLblDetails.Size = new Size(76, 15);
             sizeLblDetails.TabIndex = 28;
@@ -186,7 +188,7 @@
             // latestModifyLbl
             // 
             latestModifyLbl.AutoSize = true;
-            latestModifyLbl.Location = new Point(233, 403);
+            latestModifyLbl.Location = new Point(230, 448);
             latestModifyLbl.Name = "latestModifyLbl";
             latestModifyLbl.Size = new Size(215, 15);
             latestModifyLbl.TabIndex = 29;
@@ -208,7 +210,7 @@
             Controls.Add(treeView1);
             Controls.Add(panelGraphic1);
             Name = "globalUserControl";
-            Size = new Size(796, 451);
+            Size = new Size(863, 492);
             panelGraphic1.ResumeLayout(false);
             panelGraphic1.PerformLayout();
             ResumeLayout(false);

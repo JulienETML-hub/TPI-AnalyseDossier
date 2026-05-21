@@ -7,7 +7,7 @@ using TPI_AnalyseDossier.FileSystem;
 
 namespace TPI_AnalyseDossier
 {
-    public partial class Form1 : Form
+    public partial class FileSystemAnalyseur : Form
     {
                 
         private PieChart _pieChart;
@@ -15,10 +15,11 @@ namespace TPI_AnalyseDossier
         private DirectoryStats directoryStats;
         private UserControl ctrl;
 
-        public Form1()
+        public FileSystemAnalyseur()
         {
             InitializeComponent();
             Theme.ApplyTheme(this);
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -27,6 +28,7 @@ namespace TPI_AnalyseDossier
             ctrl.DataReadyPath += (data) =>
             {
                 this.selectedPath = data;
+                this.Text += ": " + this.selectedPath;
             };
             ctrl.DataReadyStats += (data) =>
             {
@@ -34,7 +36,6 @@ namespace TPI_AnalyseDossier
             };
             LoadControl(ctrl);
             backgroundSelection(ctrl);
-
 
         }
 

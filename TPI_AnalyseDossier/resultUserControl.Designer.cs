@@ -153,7 +153,7 @@
             // pathLbl
             // 
             pathLbl.AutoSize = true;
-            pathLbl.Location = new Point(302, 15);
+            pathLbl.Location = new Point(244, 18);
             pathLbl.Name = "pathLbl";
             pathLbl.Size = new Size(38, 15);
             pathLbl.TabIndex = 9;

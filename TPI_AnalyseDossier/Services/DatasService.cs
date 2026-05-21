@@ -10,39 +10,86 @@ namespace TPI_AnalyseDossier.Services
 {
     public class DatasService
     {
-
-        public DatasService() { }
-        private async Task<string[]> SearchSubDirectory(string path)
+        private List<String> allDirectories;
+        private List<FileInfo> totalFileInfo;
+        private int accesrefuse =0;
+        public DatasService() {
+        this.allDirectories = new List<String>();   
+        this.totalFileInfo = new List<FileInfo>();
+        }
+        private string[] SearchSubDirectory(string path)
         {
-            return Directory.EnumerateDirectories(path).ToArray();
+            string[] subDirectory = Directory.EnumerateDirectories(path).ToArray();
+
+            if (subDirectory.Length > 0)
+            {
+                foreach (var item in subDirectory)
+                {
+                    try
+                    {
+                        var info = new DirectoryInfo(item);
+
+                        // ✅ skip symlink / junction
+                        if ((info.Attributes & FileAttributes.ReparsePoint) != 0)
+                        {
+                            accesrefuse++;
+                            continue;
+                        }
+                        this.allDirectories.Add(item);
+                        string[] subDirectory2 = SearchSubDirectory(item);
+                        this.allDirectories.AddRange(subDirectory2);
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        //accesrefuse++;
+                        // ✅ skip accès refusé
+                    }
+                }
+            }
+
+            return subDirectory;
         }
         public async Task<FileSystemItem[]> DatasServiceSearch(string path, string[] extension, int minimalSize, bool? sortAscending = null, string sortBy = "noSort")/*, double minimalSize, string researchString*/
         {
-            FileSystemItem[] files;
+            
+            List<FileItem> files;
             var options = new EnumerationOptions
             {
                 RecurseSubdirectories = false,
             };
-            /*foreach (item in SearchSubDirectory(path)) {
+            string[]allDirectories2 = this.SearchSubDirectory(path);
+            Debug.WriteLine(" alldirectories count : " + this.allDirectories.Count);
+            Debug.WriteLine("acces refuse:  "+accesrefuse);
+            Debug.WriteLine("allDirectories2 count  " + allDirectories2.Count());
+
+            //Thread.Sleep(2000);
+            /*foreach (string item in SearchSubDirectory(path)) {
+             Debug.WriteLine(item);
+            }*/
+            ;
+            foreach (var item in this.allDirectories)
+            {
+                var result = Directory.EnumerateFiles(item, "*", options)
+                .Select(p => new FileInfo(p))
+                .Where(f => f.Length >= minimalSize &&
+                (extension.Contains(f.Extension) || extension.Length == 0));
+                this.totalFileInfo.AddRange(result);
             }
-            ;*/
-            var result = Directory.EnumerateFiles(path, "*", options)
-            .Select(p => new FileInfo(p))
-            .Where(f => f.Length >= minimalSize &&
-            (extension.Contains(f.Extension) || extension.Length == 0));
+            List<FileInfo> sortedResult = new List<FileInfo>();
+            FileInfo[] totalFileArray2 = this.totalFileInfo.ToArray();
+
             if (sortAscending == true)
             {
                 switch (sortBy)
                 {
                     case "name":
-                        result = result.OrderBy(f => f.Name);
+                        sortedResult.AddRange(totalFileArray2.OrderBy(f => f.Name));
                         break;
                     case "size":
-                        result = result.OrderBy(f => f.Length);
-
+                        sortedResult.AddRange(totalFileArray2.OrderBy(f => f.Length));
                         break;
                     case "date":
-                        result = result.OrderBy(f => f.LastWriteTime);
+                        sortedResult.AddRange(totalFileArray2.OrderBy(f => f.LastWriteTime));
                         break;
 
                 }
@@ -52,18 +99,18 @@ namespace TPI_AnalyseDossier.Services
                 switch (sortBy)
                 {
                     case "name":
-                        result = result.OrderByDescending(f => f.Name);
+                        sortedResult.AddRange(totalFileArray2.OrderByDescending(f => f.Name));
                         break;
                     case "size":
-                        result = result.OrderByDescending(f => f.Length);
+                        sortedResult.AddRange(totalFileArray2.OrderByDescending(f => f.Length));
 
                         break;
                     case "date":
-                        result = result.OrderByDescending(f => f.LastWriteTime);
+                        sortedResult.AddRange(totalFileArray2.OrderByDescending(f => f.LastWriteTime));
                         break;
                 }
                 }
-            return result.Take(13).Select(file => new FileItem(file.FullName)).ToArray();
+            return sortedResult.Take(10).Select(file => new FileItem(file.FullName)).ToArray();
 
         }
     }

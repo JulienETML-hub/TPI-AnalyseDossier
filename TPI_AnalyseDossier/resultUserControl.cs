@@ -83,7 +83,7 @@ namespace TPI_AnalyseDossier
         private void insertElementIntoDataGrid(FileSystemItem fileSystemItem)
         {
             Debug.WriteLine("12");
-            dataGridViewResults.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, fileSystemItem.Path);
+            dataGridViewResults.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size +" Ko", fileSystemItem.LastModify, fileSystemItem.Path);
 
 
 

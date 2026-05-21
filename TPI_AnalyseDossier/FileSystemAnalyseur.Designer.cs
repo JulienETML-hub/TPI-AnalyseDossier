@@ -1,6 +1,6 @@
 ﻿namespace TPI_AnalyseDossier
 {
-    partial class Form1
+    partial class FileSystemAnalyseur
     {
         /// <summary>
         ///  Required designer variable.
@@ -49,7 +49,7 @@
             // 
             panelMainPnl.Location = new Point(107, 12);
             panelMainPnl.Name = "panelMainPnl";
-            panelMainPnl.Size = new Size(789, 465);
+            panelMainPnl.Size = new Size(1011, 501);
             panelMainPnl.TabIndex = 1;
             panelMainPnl.Paint += panelMainPnl_Paint;
             // 
@@ -83,18 +83,18 @@
             globalBtn.UseVisualStyleBackColor = true;
             globalBtn.Click += globalBtn_Click;
             // 
-            // Form1
+            // FileSystemAnalyseur
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(900, 480);
+            ClientSize = new Size(983, 514);
             Controls.Add(globalBtn);
             Controls.Add(resultBtn);
             Controls.Add(heavierFileBtn);
             Controls.Add(heavierFolderBtn);
             Controls.Add(panelMainPnl);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "FileSystemAnalyseur";
+            Text = "Analyseur du système de fichiers";
             Load += Form1_Load;
             ResumeLayout(false);
         }

@@ -138,14 +138,21 @@ namespace TPI_AnalyseDossier
         private async void dataUILoad(DirectoryStats directoryStats)
         {
             ListViewItem item = new ListViewItem(directoryStats.DirectoryCount.ToString());
+            
             item.SubItems.Add(directoryStats.FileCount.ToString());
             item.SubItems.Add(directoryStats.TotalSize.ToString());
             item.SubItems.Add(directoryStats.AverageFileSize.ToString());
             item.SubItems.Add(directoryStats.LargestDirectoryPath.ToString());
             item.SubItems.Add(directoryStats.LargestFilePath.ToString());
+           /* item.SubItems.Add(27.ToString());
+            item.SubItems.Add("123 Mo");
+            item.SubItems.Add("2.1Mo");
+            item.SubItems.Add("Impôts");
+            item.SubItems.Add("Rapport annuel.pdf");*/
             InitChart(directoryStats.FilesByExtension);
             Debug.Write("elements ignorés : " + directoryStats.IgnoredElements.ToString());
             listView1.Items.Add(item);
+            treeView1.ImageList = imageList2;
         }
         private async void LoadDirectory(string path)
         {
@@ -172,7 +179,7 @@ namespace TPI_AnalyseDossier
                 node.Nodes.Clear();
 
                 string path = node.Tag.ToString();
-
+                
                 try
                 {
                     // dossiers
@@ -180,9 +187,7 @@ namespace TPI_AnalyseDossier
                     {
                         TreeNode child = new TreeNode(Path.GetFileName(dir));
                         child.Tag = dir;
-
                         child.Nodes.Add("loading...");
-
                         node.Nodes.Add(child);
                     }
 
@@ -191,6 +196,8 @@ namespace TPI_AnalyseDossier
                     {
                         TreeNode fileNode = new TreeNode(Path.GetFileName(file));
                         fileNode.Tag = file;
+                        fileNode.ImageIndex = 1;
+                        fileNode.SelectedImageIndex = 1;
                         node.Nodes.Add(fileNode);
                     }
                 }
