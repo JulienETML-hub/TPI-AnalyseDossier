@@ -112,11 +112,14 @@
             // 
             // listView1
             // 
+            listView1.Activation = ItemActivation.OneClick;
             listView1.HeaderStyle = ColumnHeaderStyle.Nonclickable;
             listView1.HideSelection = true;
+            listView1.HoverSelection = true;
             listView1.Location = new Point(230, 49);
             listView1.Name = "listView1";
             listView1.Scrollable = false;
+            listView1.ShowItemToolTips = true;
             listView1.Size = new Size(629, 49);
             listView1.TabIndex = 24;
             listView1.UseCompatibleStateImageBehavior = false;
@@ -146,7 +149,6 @@
             imageList2.ImageStream = (ImageListStreamer)resources.GetObject("imageList2.ImageStream");
             imageList2.TransparentColor = Color.Transparent;
             imageList2.Images.SetKeyName(0, "folderIcon.png");
-            imageList2.Images.SetKeyName(1, "pdfIcon.png");
             // 
             // detailsTitleLbl
             // 

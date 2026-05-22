@@ -28,7 +28,7 @@ namespace TPI_AnalyseDossier
             ctrl.DataReadyPath += (data) =>
             {
                 this.selectedPath = data;
-                this.Text += ": " + this.selectedPath;
+                //this.Text += ": " + this.selectedPath;
             };
             ctrl.DataReadyStats += (data) =>
             {

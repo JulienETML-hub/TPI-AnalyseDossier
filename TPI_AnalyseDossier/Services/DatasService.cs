@@ -12,15 +12,19 @@ namespace TPI_AnalyseDossier.Services
     {
         private List<String> allDirectories;
         private List<FileInfo> totalFileInfo;
-        private int accesrefuse =0;
-        public DatasService() {
-        this.allDirectories = new List<String>();   
-        this.totalFileInfo = new List<FileInfo>();
+        private int accesrefuse = 0;
+
+        public DatasService()
+        {
+            this.allDirectories = new List<String>();
+            this.totalFileInfo = new List<FileInfo>();
         }
+
         private string[] SearchSubDirectory(string path)
         {
             string[] subDirectory = Directory.EnumerateDirectories(path).ToArray();
             this.allDirectories.Add(path);
+
             if (subDirectory.Length > 0)
             {
                 foreach (var item in subDirectory)
@@ -29,88 +33,108 @@ namespace TPI_AnalyseDossier.Services
                     {
                         var info = new DirectoryInfo(item);
 
-                        // ✅ skip symlink / junction
                         if ((info.Attributes & FileAttributes.ReparsePoint) != 0)
                         {
                             accesrefuse++;
                             continue;
                         }
-                        
+
                         SearchSubDirectory(item);
-                        //this.allDirectories.AddRange(subDirectory2);
                     }
                     catch (UnauthorizedAccessException)
                     {
-                        //accesrefuse++;
-                        // ✅ skip accès refusé
+                        // skip accès refusé
                     }
                 }
             }
 
             return subDirectory;
         }
-        public async Task<FileSystemItem[]> DatasServiceSearch(string path, string[] extension, int minimalSize, bool? sortAscending = null, string sortBy = "noSort")/*, double minimalSize, string researchString*/
+
+        /// <summary>
+        /// Parcourt récursivement le répertoire et stocke tous les fichiers trouvés dans totalFileInfo.
+        /// </summary>
+        public async Task DatasServiceSearch(string path)
         {
-            
-            List<FileItem> files;
+            // Réinitialisation pour éviter les doublons lors d'appels successifs
+            this.allDirectories.Clear();
+            this.totalFileInfo.Clear();
+            this.accesrefuse = 0;
+
             var options = new EnumerationOptions
             {
                 RecurseSubdirectories = false,
             };
+
             this.SearchSubDirectory(path);
-            Debug.WriteLine(" alldirectories count : " + this.allDirectories.Count);
-            Debug.WriteLine("acces refuse:  "+accesrefuse);
 
-            //Thread.Sleep(2000);
-            /*foreach (string item in SearchSubDirectory(path)) {
-             Debug.WriteLine(item);
-            }*/
-            ;
-            foreach (var item in this.allDirectories)
+            foreach (var directory in this.allDirectories)
             {
-                var result = Directory.EnumerateFiles(item, "*", options)
-                .Select(p => new FileInfo(p))
-                .Where(f => f.Length >= minimalSize &&
-                (extension.Contains(f.Extension) || extension.Length == 0));
-                this.totalFileInfo.AddRange(result);
+                foreach (var path2 in Directory.EnumerateFiles(directory, "*", options))
+                {
+                    try
+                    {
+                        var info = new FileInfo(path2);
+                        _ = info.Length; // force la lecture pour capturer l'erreur ici (Au cas où le fichier est un fichier temporaire, évite de poser des prbl + tard
+                        this.totalFileInfo.Add(info);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // fichier temporaire disparu entre l'énumération et l'accès
+                    }
+                }
             }
-            List<FileInfo> sortedResult = new List<FileInfo>();
-            FileInfo[] totalFileArray2 = this.totalFileInfo.ToArray();
+        }
 
-            if (sortAscending == true)
+        /// <summary>
+        /// Applique les filtres et le tri sur les fichiers collectés par DatasServiceSearch.
+        /// </summary>
+        /// <param name="extension">Extensions acceptées (tableau vide = toutes)</param>
+        /// <param name="minimalSize">Taille minimale en octets</param>
+        /// <param name="sortAscending">True = croissant, False = décroissant, null = aucun tri</param>
+        /// <param name="sortBy">Critère de tri : "name", "size", "date"</param>
+        /// <param name="maxResults">Nombre maximum de résultats retournés</param>
+        public FileSystemItem[] FilterFiles(
+            string[] extension,
+            int minimalSize,
+            bool? sortAscending = null,
+            string sortBy = "noSort",
+            string stringSearch = "",
+            int maxResults = 10)
+        {
+            // Filtrage
+            IEnumerable<FileInfo> filteredFiles = this.totalFileInfo
+                .Where(f =>
+                    f.Length >= (minimalSize * 1000) &&
+                    (extension.Length == 0 || extension.Contains(f.Extension)) &&
+                    f.Name.Contains(stringSearch)
+                );
+
+            // Triage
+            filteredFiles = sortAscending switch
             {
-                switch (sortBy)
+                true => sortBy switch
                 {
-                    case "name":
-                        sortedResult.AddRange(totalFileArray2.OrderBy(f => f.Name));
-                        break;
-                    case "size":
-                        sortedResult.AddRange(totalFileArray2.OrderBy(f => f.Length));
-                        break;
-                    case "date":
-                        sortedResult.AddRange(totalFileArray2.OrderBy(f => f.LastWriteTime));
-                        break;
-
-                }
-            } 
-            else if (sortAscending == false)
-            {
-                switch (sortBy)
+                    "name" => filteredFiles.OrderBy(f => f.Name),
+                    "size" => filteredFiles.OrderBy(f => f.Length),
+                    "date" => filteredFiles.OrderBy(f => f.LastWriteTime),
+                    _ => filteredFiles
+                },
+                false => sortBy switch
                 {
-                    case "name":
-                        sortedResult.AddRange(totalFileArray2.OrderByDescending(f => f.Name));
-                        break;
-                    case "size":
-                        sortedResult.AddRange(totalFileArray2.OrderByDescending(f => f.Length));
+                    "name" => filteredFiles.OrderByDescending(f => f.Name),
+                    "size" => filteredFiles.OrderByDescending(f => f.Length),
+                    "date" => filteredFiles.OrderByDescending(f => f.LastWriteTime),
+                    _ => filteredFiles
+                },
+                _ => filteredFiles
+            };
 
-                        break;
-                    case "date":
-                        sortedResult.AddRange(totalFileArray2.OrderByDescending(f => f.LastWriteTime));
-                        break;
-                }
-                }
-            return sortedResult.Take(10).Select(file => new FileItem(file.FullName)).ToArray();
 
+            return filteredFiles
+                .Take(maxResults)
+                .Select(f => new FileItem(f.FullName))
+                .ToArray();
         }
     }
 }

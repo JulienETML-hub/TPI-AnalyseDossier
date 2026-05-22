@@ -20,6 +20,9 @@ namespace TPI_AnalyseDossier
         DirectoryStats directoryStats;
         private string selectedPath = "test";
         private CheckedListBox clb = new CheckedListBox();
+
+        private readonly DatasService datasService = new DatasService();
+        private bool dataLoaded = false;
         public resultUserControl()
         {
 
@@ -62,14 +65,36 @@ namespace TPI_AnalyseDossier
 
         private async void searchBtn_Click(object sender, EventArgs e)
         {
-            DatasService datasService = new DatasService();
-            //FileSystemItem fileSystemItem = new FileItem("C:\\Users\\px50vpm\\Documents\\GitHub\\TPI-AnalyseDossier\\README.md");
-            FileSystemItem[] file = await datasService.DatasServiceSearch(selectedPath, clb.CheckedItems.Cast<string>().ToArray(), sortBy: "size", minimalSize: 0, sortAscending: false);
-            pathLbl.Text = selectedPath;
-            Debug.WriteLine("Dans searchBtnClick");
-            Debug.WriteLine("1");
+            if (!dataLoaded)
+            {
+                MessageBox.Show("Les données ne sont pas encore chargées.");
+                return;
+            }
+            bool sortOrderIsAscending = false;
+            string sortedBy = dataGridViewResults.SortedColumn?.Name.ToString() ?? "size";
+            if (dataGridViewResults.SortOrder == SortOrder.Ascending)
+            {
+                sortOrderIsAscending = true;
+            }
+            else if (dataGridViewResults.SortOrder == SortOrder.Descending)
+            {
+                sortOrderIsAscending = false;
+            }
 
-            foreach (FileSystemItem item in file)
+            // Filtre
+            var files = datasService.FilterFiles(
+                extension: clb.CheckedItems.Cast<string>().ToArray(),
+                minimalSize: (int)minimalSizeNmr.Value,
+                sortAscending: sortOrderIsAscending,
+                sortBy: sortedBy,
+                stringSearch:searchBarTbx.Text,
+                maxResults: 15
+            );
+
+            pathLbl.Text = selectedPath;
+
+            dataGridViewResults.Rows.Clear();
+            foreach (FileSystemItem item in files)
             {
 
                 Debug.WriteLine("Dans foreach avant");
@@ -83,20 +108,22 @@ namespace TPI_AnalyseDossier
         private void insertElementIntoDataGrid(FileSystemItem fileSystemItem)
         {
             Debug.WriteLine("12");
-            dataGridViewResults.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size +" Ko", fileSystemItem.LastModify, fileSystemItem.Path);
+
+            dataGridViewResults.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, fileSystemItem.Path);
 
 
 
 
         }
-        public void LoadData(string selectedPath, DirectoryStats directoryStats)
+        public async void LoadData(string selectedPath, DirectoryStats directoryStats)
         {
+
             this.selectedPath = selectedPath;
             pathLbl.Text = selectedPath;
             this.directoryStats = directoryStats;
             if (directoryStats != null)
             {
-                
+
                 string[] extensionList = directoryStats.FilesByExtension.Keys.Cast<string>().ToArray();
                 clb.Items.AddRange(extensionList);
 
@@ -109,7 +136,34 @@ namespace TPI_AnalyseDossier
                     dropDown.Show(comboBox1, 0, comboBox1.Height);
                 };
             }
+            // Stock les informations dans datasService, récupérable plus tard avec le datasService.FilterFile
+            await datasService.DatasServiceSearch(selectedPath);
+            dataLoaded = true;
 
+        }
+
+        private void minimalSizeNmr_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridViewResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dataGridViewResults.Columns[e.ColumnIndex].Name == "size" && e.Value != null)
+            {
+
+                double mb = (double)e.Value;
+                if (mb >= 1)
+                {
+                    e.Value = mb.ToString() + " MB";
+                }
+                else
+                {
+                    e.Value = (mb*1000.0).ToString() + " KB";
+                }
+                
+                e.FormattingApplied = true;
+            }
         }
     }
 }

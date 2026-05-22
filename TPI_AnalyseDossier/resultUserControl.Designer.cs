@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             dataGridViewResults = new DataGridView();
-            nameClm = new DataGridViewTextBoxColumn();
-            sizeClm = new DataGridViewTextBoxColumn();
-            latestModifyClm = new DataGridViewTextBoxColumn();
+            name = new DataGridViewTextBoxColumn();
+            size = new DataGridViewTextBoxColumn();
+            date = new DataGridViewTextBoxColumn();
             pathClm = new DataGridViewTextBoxColumn();
             searchBarTbx = new TextBox();
             comboBox1 = new ComboBox();
@@ -41,6 +43,10 @@
             nbElements = new Label();
             searchBtn = new Button();
             pathLbl = new Label();
+            label1 = new Label();
+            paginationLbl = new Label();
+            nextPageBtn = new Button();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewResults).BeginInit();
             ((System.ComponentModel.ISupportInitialize)minimalSizeNmr).BeginInit();
             SuspendLayout();
@@ -52,33 +58,52 @@
             dataGridViewResults.AllowUserToResizeColumns = false;
             dataGridViewResults.AllowUserToResizeRows = false;
             dataGridViewResults.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewResults.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             dataGridViewResults.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewResults.Columns.AddRange(new DataGridViewColumn[] { nameClm, sizeClm, latestModifyClm, pathClm });
-            dataGridViewResults.Location = new Point(3, 50);
+            dataGridViewResults.Columns.AddRange(new DataGridViewColumn[] { name, size, date, pathClm });
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Window;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
+            dataGridViewResults.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewResults.Location = new Point(3, 109);
             dataGridViewResults.Name = "dataGridViewResults";
             dataGridViewResults.ReadOnly = true;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewResults.RowsDefaultCellStyle = dataGridViewCellStyle2;
             dataGridViewResults.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewResults.Size = new Size(725, 358);
+            dataGridViewResults.Size = new Size(725, 345);
             dataGridViewResults.TabIndex = 0;
             dataGridViewResults.CellContentClick += dataGridViewResults_CellContentClick;
+            dataGridViewResults.CellFormatting += dataGridViewResults_CellFormatting;
+            dataGridViewResults.Sorted += searchBtn_Click;
             // 
-            // nameClm
+            // name
             // 
-            nameClm.HeaderText = "Nom";
-            nameClm.Name = "nameClm";
-            nameClm.ReadOnly = true;
+            name.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            name.HeaderText = "Nom";
+            name.Name = "name";
+            name.ReadOnly = true;
+            name.Width = 59;
             // 
-            // sizeClm
+            // size
             // 
-            sizeClm.HeaderText = "Taille";
-            sizeClm.Name = "sizeClm";
-            sizeClm.ReadOnly = true;
+            size.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            size.HeaderText = "Taille";
+            size.Name = "size";
+            size.ReadOnly = true;
+            size.Width = 58;
             // 
-            // latestModifyClm
+            // date
             // 
-            latestModifyClm.HeaderText = "Dernière modification";
-            latestModifyClm.Name = "latestModifyClm";
-            latestModifyClm.ReadOnly = true;
+            date.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            date.HeaderText = "Dernière modification";
+            date.Name = "date";
+            date.ReadOnly = true;
+            date.Width = 134;
             // 
             // pathClm
             // 
@@ -89,52 +114,54 @@
             // 
             // searchBarTbx
             // 
-            searchBarTbx.Location = new Point(3, 438);
+            searchBarTbx.Location = new Point(314, 80);
             searchBarTbx.Name = "searchBarTbx";
-            searchBarTbx.Size = new Size(179, 23);
+            searchBarTbx.Size = new Size(153, 23);
             searchBarTbx.TabIndex = 1;
             searchBarTbx.TextChanged += searchBarTbx_TextChanged;
             // 
             // comboBox1
             // 
             comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(3, 24);
+            comboBox1.Location = new Point(3, 80);
             comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(109, 23);
+            comboBox1.Size = new Size(92, 23);
             comboBox1.TabIndex = 3;
-            comboBox1.Text = "Filtre extensions";
+            comboBox1.Text = "Choisir";
             // 
             // minimalSizeNmr
             // 
-            minimalSizeNmr.Increment = new decimal(new int[] { 25, 0, 0, 65536 });
-            minimalSizeNmr.Location = new Point(118, 25);
+            minimalSizeNmr.Increment = new decimal(new int[] { 500, 0, 0, 0 });
+            minimalSizeNmr.Location = new Point(142, 80);
             minimalSizeNmr.Name = "minimalSizeNmr";
-            minimalSizeNmr.Size = new Size(120, 23);
+            minimalSizeNmr.Size = new Size(125, 23);
             minimalSizeNmr.TabIndex = 4;
+            minimalSizeNmr.Tag = "";
+            minimalSizeNmr.ValueChanged += minimalSizeNmr_ValueChanged;
             // 
             // searchLbl
             // 
             searchLbl.AutoSize = true;
-            searchLbl.Location = new Point(3, 420);
+            searchLbl.Location = new Point(314, 63);
             searchLbl.Name = "searchLbl";
-            searchLbl.Size = new Size(66, 15);
+            searchLbl.Size = new Size(72, 15);
             searchLbl.TabIndex = 5;
-            searchLbl.Text = "Rechercher";
+            searchLbl.Text = "Filtre textuel";
             searchLbl.Click += searchLbl_Click;
             // 
             // minimalSize
             // 
             minimalSize.AutoSize = true;
-            minimalSize.Location = new Point(118, 7);
+            minimalSize.Location = new Point(142, 63);
             minimalSize.Name = "minimalSize";
-            minimalSize.Size = new Size(125, 15);
+            minimalSize.Size = new Size(120, 15);
             minimalSize.TabIndex = 6;
-            minimalSize.Text = "Taille minimal (en mo)";
+            minimalSize.Text = "Taille minimal (en ko)";
             // 
             // nbElements
             // 
             nbElements.AutoSize = true;
-            nbElements.Location = new Point(244, 33);
+            nbElements.Location = new Point(3, 36);
             nbElements.Name = "nbElements";
             nbElements.Size = new Size(171, 15);
             nbElements.TabIndex = 7;
@@ -142,27 +169,75 @@
             // 
             // searchBtn
             // 
-            searchBtn.Location = new Point(206, 416);
+            searchBtn.BackColor = SystemColors.ButtonHighlight;
+            searchBtn.FlatAppearance.BorderSize = 3;
+            searchBtn.Location = new Point(653, 78);
             searchBtn.Name = "searchBtn";
             searchBtn.Size = new Size(75, 23);
             searchBtn.TabIndex = 8;
-            searchBtn.Text = "button1";
-            searchBtn.UseVisualStyleBackColor = true;
+            searchBtn.Text = "Filtrer";
+            searchBtn.UseVisualStyleBackColor = false;
             searchBtn.Click += searchBtn_Click;
             // 
             // pathLbl
             // 
             pathLbl.AutoSize = true;
-            pathLbl.Location = new Point(244, 18);
+            pathLbl.Font = new Font("Segoe UI", 11F);
+            pathLbl.Location = new Point(3, 9);
             pathLbl.Name = "pathLbl";
-            pathLbl.Size = new Size(38, 15);
+            pathLbl.Size = new Size(50, 20);
             pathLbl.TabIndex = 9;
             pathLbl.Text = "label1";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(3, 63);
+            label1.Name = "label1";
+            label1.Size = new Size(92, 15);
+            label1.TabIndex = 10;
+            label1.Text = "Filtre extensions";
+            // 
+            // paginationLbl
+            // 
+            paginationLbl.AutoSize = true;
+            paginationLbl.Font = new Font("Segoe UI", 9F);
+            paginationLbl.Location = new Point(359, 468);
+            paginationLbl.Name = "paginationLbl";
+            paginationLbl.Size = new Size(13, 15);
+            paginationLbl.TabIndex = 13;
+            paginationLbl.Text = "2";
+            // 
+            // nextPageBtn
+            // 
+            nextPageBtn.BackColor = SystemColors.ButtonHighlight;
+            nextPageBtn.FlatAppearance.BorderSize = 3;
+            nextPageBtn.Location = new Point(378, 464);
+            nextPageBtn.Name = "nextPageBtn";
+            nextPageBtn.Size = new Size(119, 23);
+            nextPageBtn.TabIndex = 14;
+            nextPageBtn.Text = "Page suivante";
+            nextPageBtn.UseVisualStyleBackColor = false;
+            // 
+            // button1
+            // 
+            button1.BackColor = SystemColors.ButtonHighlight;
+            button1.FlatAppearance.BorderSize = 3;
+            button1.Location = new Point(234, 464);
+            button1.Name = "button1";
+            button1.Size = new Size(119, 23);
+            button1.TabIndex = 15;
+            button1.Text = "Page précédente";
+            button1.UseVisualStyleBackColor = false;
             // 
             // resultUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(button1);
+            Controls.Add(nextPageBtn);
+            Controls.Add(paginationLbl);
+            Controls.Add(label1);
             Controls.Add(pathLbl);
             Controls.Add(searchBtn);
             Controls.Add(nbElements);
@@ -173,7 +248,7 @@
             Controls.Add(searchBarTbx);
             Controls.Add(dataGridViewResults);
             Name = "resultUserControl";
-            Size = new Size(731, 562);
+            Size = new Size(731, 498);
             Load += resultUserControl_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewResults).EndInit();
             ((System.ComponentModel.ISupportInitialize)minimalSizeNmr).EndInit();
@@ -187,14 +262,18 @@
         private TextBox searchBarTbx;
         private ComboBox comboBox1;
         private NumericUpDown minimalSizeNmr;
-        private DataGridViewTextBoxColumn nameClm;
-        private DataGridViewTextBoxColumn sizeClm;
-        private DataGridViewTextBoxColumn latestModifyClm;
-        private DataGridViewTextBoxColumn pathClm;
         private Label searchLbl;
         private Label minimalSize;
         private Label nbElements;
         private Button searchBtn;
         private Label pathLbl;
+        private Label label1;
+        private Label paginationLbl;
+        private Button nextPageBtn;
+        private Button button1;
+        private DataGridViewTextBoxColumn name;
+        private DataGridViewTextBoxColumn size;
+        private DataGridViewTextBoxColumn date;
+        private DataGridViewTextBoxColumn pathClm;
     }
 }

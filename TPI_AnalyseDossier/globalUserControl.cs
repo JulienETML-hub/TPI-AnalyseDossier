@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,6 +27,7 @@ namespace TPI_AnalyseDossier
         public string selectedPath;
         public event Action<string> DataReadyPath;
         public event Action<DirectoryStats> DataReadyStats;
+        private Dictionary<string, int> iconCache = new Dictionary<string, int>();
         public globalUserControl()
         {
             InitializeComponent();
@@ -138,17 +140,18 @@ namespace TPI_AnalyseDossier
         private async void dataUILoad(DirectoryStats directoryStats)
         {
             ListViewItem item = new ListViewItem(directoryStats.DirectoryCount.ToString());
-            
             item.SubItems.Add(directoryStats.FileCount.ToString());
             item.SubItems.Add(directoryStats.TotalSize.ToString());
             item.SubItems.Add(directoryStats.AverageFileSize.ToString());
             item.SubItems.Add(directoryStats.LargestDirectoryPath.ToString());
             item.SubItems.Add(directoryStats.LargestFilePath.ToString());
-           /* item.SubItems.Add(27.ToString());
-            item.SubItems.Add("123 Mo");
-            item.SubItems.Add("2.1Mo");
-            item.SubItems.Add("Impôts");
-            item.SubItems.Add("Rapport annuel.pdf");*/
+            item.ToolTipText = directoryStats.LargestDirectoryPath.ToString();
+
+            /* item.SubItems.Add(27.ToString());
+             item.SubItems.Add("123 Mo");
+             item.SubItems.Add("2.1Mo");
+             item.SubItems.Add("Impôts");
+             item.SubItems.Add("Rapport annuel.pdf");*/
             InitChart(directoryStats.FilesByExtension);
             Debug.Write("elements ignorés : " + directoryStats.IgnoredElements.ToString());
             listView1.Items.Add(item);
@@ -188,6 +191,8 @@ namespace TPI_AnalyseDossier
                         TreeNode child = new TreeNode(Path.GetFileName(dir));
                         child.Tag = dir;
                         child.Nodes.Add("loading...");
+                        child.ImageIndex = 0;
+                        child.SelectedImageIndex = 0;
                         node.Nodes.Add(child);
                     }
 
@@ -196,8 +201,17 @@ namespace TPI_AnalyseDossier
                     {
                         TreeNode fileNode = new TreeNode(Path.GetFileName(file));
                         fileNode.Tag = file;
-                        fileNode.ImageIndex = 1;
-                        fileNode.SelectedImageIndex = 1;
+                        string ext = Path.GetExtension(file).ToLower();
+
+                        if (!iconCache.ContainsKey(ext))
+                        {
+                            Icon icon = Icon.ExtractAssociatedIcon(file);
+                            imageList2.Images.Add(icon);
+                            iconCache[ext] = imageList2.Images.Count - 1;
+                        }
+
+                        fileNode.ImageIndex = iconCache[ext];
+                        fileNode.SelectedImageIndex = fileNode.ImageIndex;
                         node.Nodes.Add(fileNode);
                     }
                 }
