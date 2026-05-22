@@ -20,7 +20,7 @@ namespace TPI_AnalyseDossier.Services
         private string[] SearchSubDirectory(string path)
         {
             string[] subDirectory = Directory.EnumerateDirectories(path).ToArray();
-
+            this.allDirectories.Add(path);
             if (subDirectory.Length > 0)
             {
                 foreach (var item in subDirectory)
@@ -35,9 +35,9 @@ namespace TPI_AnalyseDossier.Services
                             accesrefuse++;
                             continue;
                         }
-                        this.allDirectories.Add(item);
-                        string[] subDirectory2 = SearchSubDirectory(item);
-                        this.allDirectories.AddRange(subDirectory2);
+                        
+                        SearchSubDirectory(item);
+                        //this.allDirectories.AddRange(subDirectory2);
                     }
                     catch (UnauthorizedAccessException)
                     {
@@ -57,10 +57,9 @@ namespace TPI_AnalyseDossier.Services
             {
                 RecurseSubdirectories = false,
             };
-            string[]allDirectories2 = this.SearchSubDirectory(path);
+            this.SearchSubDirectory(path);
             Debug.WriteLine(" alldirectories count : " + this.allDirectories.Count);
             Debug.WriteLine("acces refuse:  "+accesrefuse);
-            Debug.WriteLine("allDirectories2 count  " + allDirectories2.Count());
 
             //Thread.Sleep(2000);
             /*foreach (string item in SearchSubDirectory(path)) {
