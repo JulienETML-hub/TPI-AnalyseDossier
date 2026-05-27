@@ -46,7 +46,9 @@
             label1 = new Label();
             paginationLbl = new Label();
             nextPageBtn = new Button();
-            button1 = new Button();
+            backBtn = new Button();
+            progressBar1 = new ProgressBar();
+            progressBarLbl = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridViewResults).BeginInit();
             ((System.ComponentModel.ISupportInitialize)minimalSizeNmr).BeginInit();
             SuspendLayout();
@@ -69,21 +71,20 @@
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
             dataGridViewResults.DefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewResults.Location = new Point(3, 109);
+            dataGridViewResults.Location = new Point(6, 107);
             dataGridViewResults.Name = "dataGridViewResults";
             dataGridViewResults.ReadOnly = true;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
             dataGridViewResults.RowsDefaultCellStyle = dataGridViewCellStyle2;
             dataGridViewResults.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewResults.Size = new Size(725, 345);
+            dataGridViewResults.Size = new Size(719, 345);
             dataGridViewResults.TabIndex = 0;
-            dataGridViewResults.CellContentClick += dataGridViewResults_CellContentClick;
             dataGridViewResults.CellFormatting += dataGridViewResults_CellFormatting;
             dataGridViewResults.Sorted += searchBtn_Click;
             // 
             // name
             // 
-            name.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            name.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
             name.HeaderText = "Nom";
             name.Name = "name";
             name.ReadOnly = true;
@@ -107,6 +108,7 @@
             // 
             // pathClm
             // 
+            pathClm.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             pathClm.HeaderText = "Chemin";
             pathClm.Name = "pathClm";
             pathClm.ReadOnly = true;
@@ -118,7 +120,6 @@
             searchBarTbx.Name = "searchBarTbx";
             searchBarTbx.Size = new Size(153, 23);
             searchBarTbx.TabIndex = 1;
-            searchBarTbx.TextChanged += searchBarTbx_TextChanged;
             // 
             // comboBox1
             // 
@@ -133,6 +134,7 @@
             // 
             minimalSizeNmr.Increment = new decimal(new int[] { 500, 0, 0, 0 });
             minimalSizeNmr.Location = new Point(142, 80);
+            minimalSizeNmr.Maximum = new decimal(new int[] { 1661992959, 1808227885, 5, 0 });
             minimalSizeNmr.Name = "minimalSizeNmr";
             minimalSizeNmr.Size = new Size(125, 23);
             minimalSizeNmr.TabIndex = 4;
@@ -147,7 +149,6 @@
             searchLbl.Size = new Size(72, 15);
             searchLbl.TabIndex = 5;
             searchLbl.Text = "Filtre textuel";
-            searchLbl.Click += searchLbl_Click;
             // 
             // minimalSize
             // 
@@ -185,9 +186,9 @@
             pathLbl.Font = new Font("Segoe UI", 11F);
             pathLbl.Location = new Point(3, 9);
             pathLbl.Name = "pathLbl";
-            pathLbl.Size = new Size(50, 20);
+            pathLbl.Size = new Size(340, 20);
             pathLbl.TabIndex = 9;
-            pathLbl.Text = "label1";
+            pathLbl.Text = "Aucun chemin n'a été sélectionné pour le moment";
             // 
             // label1
             // 
@@ -218,23 +219,43 @@
             nextPageBtn.TabIndex = 14;
             nextPageBtn.Text = "Page suivante";
             nextPageBtn.UseVisualStyleBackColor = false;
+            nextPageBtn.Click += nextPageBtn_Click;
             // 
-            // button1
+            // backBtn
             // 
-            button1.BackColor = SystemColors.ButtonHighlight;
-            button1.FlatAppearance.BorderSize = 3;
-            button1.Location = new Point(234, 464);
-            button1.Name = "button1";
-            button1.Size = new Size(119, 23);
-            button1.TabIndex = 15;
-            button1.Text = "Page précédente";
-            button1.UseVisualStyleBackColor = false;
+            backBtn.BackColor = SystemColors.ButtonHighlight;
+            backBtn.FlatAppearance.BorderSize = 3;
+            backBtn.Location = new Point(234, 464);
+            backBtn.Name = "backBtn";
+            backBtn.Size = new Size(119, 23);
+            backBtn.TabIndex = 15;
+            backBtn.Text = "Page précédente";
+            backBtn.UseVisualStyleBackColor = false;
+            backBtn.Click += button1_Click;
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(235, 279);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(137, 23);
+            progressBar1.TabIndex = 16;
+            // 
+            // progressBarLbl
+            // 
+            progressBarLbl.AutoSize = true;
+            progressBarLbl.Location = new Point(207, 261);
+            progressBarLbl.Name = "progressBarLbl";
+            progressBarLbl.Size = new Size(199, 15);
+            progressBarLbl.TabIndex = 17;
+            progressBarLbl.Text = "Chargement des données en cours...";
             // 
             // resultUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(button1);
+            Controls.Add(progressBarLbl);
+            Controls.Add(progressBar1);
+            Controls.Add(backBtn);
             Controls.Add(nextPageBtn);
             Controls.Add(paginationLbl);
             Controls.Add(label1);
@@ -248,8 +269,7 @@
             Controls.Add(searchBarTbx);
             Controls.Add(dataGridViewResults);
             Name = "resultUserControl";
-            Size = new Size(731, 498);
-            Load += resultUserControl_Load;
+            Size = new Size(733, 498);
             ((System.ComponentModel.ISupportInitialize)dataGridViewResults).EndInit();
             ((System.ComponentModel.ISupportInitialize)minimalSizeNmr).EndInit();
             ResumeLayout(false);
@@ -270,7 +290,9 @@
         private Label label1;
         private Label paginationLbl;
         private Button nextPageBtn;
-        private Button button1;
+        private Button backBtn;
+        private ProgressBar progressBar1;
+        private Label progressBarLbl;
         private DataGridViewTextBoxColumn name;
         private DataGridViewTextBoxColumn size;
         private DataGridViewTextBoxColumn date;

@@ -41,13 +41,48 @@ namespace TPI_AnalyseDossier.FileSystem
         }
         public double GetTotalSize()
         {
-            double sum =  Children.Sum(child =>
-                child is FileItem f ? f.Size :
-                ((DirectoryItem)child).GetTotalSize()
-            );
-            return FormatService.ConvertToMo(sum);
+            double totalSize = 0;
+
+            try
+            {
+                // ✅ fichiers du dossier courant
+                foreach (var file in Directory.EnumerateFiles(this.Path))
+                {
+                    try
+                    {
+                        totalSize += new FileInfo(file).Length;
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                // ✅ sous-dossiers (récursif)
+                foreach (var dir in Directory.EnumerateDirectories(this.Path))
+                {
+                    try
+                    {
+                        var dirInfo = new DirectoryInfo(dir);
+
+                        // ignore les liens symboliques
+                        if ((dirInfo.Attributes & FileAttributes.ReparsePoint) != 0)
+                            continue;
+
+                        totalSize += new DirectoryItem(dir).GetTotalSize();
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return totalSize;
         }
-       
+
+
     }
 
 }

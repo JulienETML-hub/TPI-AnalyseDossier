@@ -142,6 +142,7 @@
             exportPDFBtn.Size = new Size(50, 52);
             exportPDFBtn.TabIndex = 23;
             exportPDFBtn.UseVisualStyleBackColor = false;
+            exportPDFBtn.Click += exportPDFBtn_Click;
             // 
             // imageList2
             // 
@@ -164,9 +165,10 @@
             nameLbl.AutoSize = true;
             nameLbl.Location = new Point(230, 418);
             nameLbl.Name = "nameLbl";
-            nameLbl.Size = new Size(253, 15);
+            nameLbl.Size = new Size(43, 15);
             nameLbl.TabIndex = 26;
-            nameLbl.Text = "Nom : TPI_PlanificationInitiale_JulienMares.pdf";
+            nameLbl.Text = "Nom : ";
+            nameLbl.Click += nameLbl_Click;
             // 
             // pathLblDetails
             // 
@@ -174,27 +176,27 @@
             pathLblDetails.Font = new Font("Segoe UI", 7F);
             pathLblDetails.Location = new Point(231, 466);
             pathLblDetails.Name = "pathLblDetails";
-            pathLblDetails.Size = new Size(303, 12);
+            pathLblDetails.Size = new Size(44, 12);
             pathLblDetails.TabIndex = 27;
-            pathLblDetails.Text = "Chemin : C:\\Users\\px50vpm\\Documents\\GitHub\\TPI-AnalyseDossier";
+            pathLblDetails.Text = "Chemin :";
             // 
             // sizeLblDetails
             // 
             sizeLblDetails.AutoSize = true;
             sizeLblDetails.Location = new Point(230, 433);
             sizeLblDetails.Name = "sizeLblDetails";
-            sizeLblDetails.Size = new Size(76, 15);
+            sizeLblDetails.Size = new Size(39, 15);
             sizeLblDetails.TabIndex = 28;
-            sizeLblDetails.Text = "Taille : 213 ko";
+            sizeLblDetails.Text = "Taille :";
             // 
             // latestModifyLbl
             // 
             latestModifyLbl.AutoSize = true;
             latestModifyLbl.Location = new Point(230, 448);
             latestModifyLbl.Name = "latestModifyLbl";
-            latestModifyLbl.Size = new Size(215, 15);
+            latestModifyLbl.Size = new Size(128, 15);
             latestModifyLbl.TabIndex = 29;
-            latestModifyLbl.Text = "Dernière modification : 04.05.2026 14:32";
+            latestModifyLbl.Text = "Dernière modification :";
             // 
             // globalUserControl
             // 

@@ -12,7 +12,11 @@ namespace TPI_AnalyseDossier.Services
     {
         private List<String> allDirectories;
         private List<FileInfo> totalFileInfo;
+        private string selectedPath;
         private int accesrefuse = 0;
+        private List<(string path, long size)> directoriesWithSize = new();
+        public (string path, long size)[] directoriesWithSizeTop10;
+        public string SelectedPath { get => selectedPath; set => selectedPath = value; }
 
         public DatasService()
         {
@@ -20,18 +24,19 @@ namespace TPI_AnalyseDossier.Services
             this.totalFileInfo = new List<FileInfo>();
         }
 
-        private string[] SearchSubDirectory(string path)
+        private long SearchSubDirectory(string path)
         {
-            string[] subDirectory = Directory.EnumerateDirectories(path).ToArray();
-            this.allDirectories.Add(path);
+            long totalSize = 0;
 
-            if (subDirectory.Length > 0)
+            try
             {
-                foreach (var item in subDirectory)
+                var subDirectories = Directory.EnumerateDirectories(path);
+
+                foreach (var dir in subDirectories)
                 {
                     try
                     {
-                        var info = new DirectoryInfo(item);
+                        var info = new DirectoryInfo(dir);
 
                         if ((info.Attributes & FileAttributes.ReparsePoint) != 0)
                         {
@@ -39,51 +44,71 @@ namespace TPI_AnalyseDossier.Services
                             continue;
                         }
 
-                        SearchSubDirectory(item);
+                        totalSize += SearchSubDirectory(dir);
                     }
                     catch (UnauthorizedAccessException)
                     {
-                        // skip accès refusé
                     }
                 }
+
+                // fichiers du dossier courant
+                foreach (var file in Directory.EnumerateFiles(path))
+                {
+                    try
+                    {
+                        var fileInfo = new FileInfo(file);
+                        _ = fileInfo.Length;
+                        totalSize += fileInfo.Length;
+
+                        this.totalFileInfo.Add(fileInfo); // ✅ tu gardes ton comportement actuel
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                // ✅ stocke la taille du dossier
+                directoriesWithSize.Add((path, totalSize));
+            }
+            catch (UnauthorizedAccessException)
+            {
             }
 
-            return subDirectory;
+            return totalSize;
         }
+
 
         /// <summary>
         /// Parcourt récursivement le répertoire et stocke tous les fichiers trouvés dans totalFileInfo.
         /// </summary>
         public async Task DatasServiceSearch(string path)
         {
-            // Réinitialisation pour éviter les doublons lors d'appels successifs
-            this.allDirectories.Clear();
-            this.totalFileInfo.Clear();
-            this.accesrefuse = 0;
-
-            var options = new EnumerationOptions
+            this.selectedPath = path;
+             if (directoriesWithSizeTop10 != null && directoriesWithSizeTop10.Length > 0)
+        return;
+            await Task.Run(() =>
             {
-                RecurseSubdirectories = false,
-            };
+                this.allDirectories.Clear();
+                this.totalFileInfo.Clear();
+                this.directoriesWithSize.Clear();
+                this.accesrefuse = 0;
 
-            this.SearchSubDirectory(path);
+                SearchSubDirectory(path);
+            });
+        }
+        public async Task GetTop10LargestDirectories()
+        {
 
-            foreach (var directory in this.allDirectories)
+            await Task.Run(() =>
             {
-                foreach (var path2 in Directory.EnumerateFiles(directory, "*", options))
-                {
-                    try
-                    {
-                        var info = new FileInfo(path2);
-                        _ = info.Length; // force la lecture pour capturer l'erreur ici (Au cas où le fichier est un fichier temporaire, évite de poser des prbl + tard
-                        this.totalFileInfo.Add(info);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        // fichier temporaire disparu entre l'énumération et l'accès
-                    }
-                }
-            }
+                this.directoriesWithSizeTop10 = this.directoriesWithSize
+                    .OrderByDescending(d => d.size)
+                    .Skip(1)
+                    .Take(10)
+                    .Reverse()
+                    .ToArray();
+            });
+
         }
 
         /// <summary>
@@ -93,15 +118,17 @@ namespace TPI_AnalyseDossier.Services
         /// <param name="minimalSize">Taille minimale en octets</param>
         /// <param name="sortAscending">True = croissant, False = décroissant, null = aucun tri</param>
         /// <param name="sortBy">Critère de tri : "name", "size", "date"</param>
-        /// <param name="maxResults">Nombre maximum de résultats retournés</param>
-        public FileSystemItem[] FilterFiles(
+        /// <param name="skipPage">Nombre maximum de résultats retournés</param>
+        public (FileSystemItem[], int TotalCount) FilterFiles(
             string[] extension,
             int minimalSize,
             bool? sortAscending = null,
             string sortBy = "noSort",
             string stringSearch = "",
-            int maxResults = 10)
+            int skipPage = 1)
+
         {
+            int skipPage2 = skipPage - 1;
             // Filtrage
             IEnumerable<FileInfo> filteredFiles = this.totalFileInfo
                 .Where(f =>
@@ -111,6 +138,7 @@ namespace TPI_AnalyseDossier.Services
                 );
 
             // Triage
+            int totalCount = filteredFiles.Count();
             filteredFiles = sortAscending switch
             {
                 true => sortBy switch
@@ -131,10 +159,12 @@ namespace TPI_AnalyseDossier.Services
             };
 
 
-            return filteredFiles
-                .Take(maxResults)
+            return (filteredFiles
+                .Skip(skipPage2*15)
+                .Take(15)
+                .Reverse() // Car à l'affichage cela inverse les données dans le mauvais ordre
                 .Select(f => new FileItem(f.FullName))
-                .ToArray();
+                .ToArray(), totalCount);
         }
     }
 }

@@ -41,7 +41,7 @@
             heavierFileBtn.Name = "heavierFileBtn";
             heavierFileBtn.Size = new Size(100, 33);
             heavierFileBtn.TabIndex = 0;
-            heavierFileBtn.Text = "Top 10 Fichiers";
+            heavierFileBtn.Text = "Top 15 Fichiers";
             heavierFileBtn.UseVisualStyleBackColor = true;
             heavierFileBtn.Click += heavierFileBtn_Click;
             // 

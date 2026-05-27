@@ -31,10 +31,12 @@
             titleLbl = new Label();
             dataGridViewTopFiles = new DataGridView();
             nameClm = new DataGridViewTextBoxColumn();
-            sizeClm = new DataGridViewTextBoxColumn();
+            size = new DataGridViewTextBoxColumn();
             latestModifyClm = new DataGridViewTextBoxColumn();
             pathClm = new DataGridViewTextBoxColumn();
             pathAnalyzed = new Label();
+            progressBarLbl = new Label();
+            progressBar1 = new ProgressBar();
             ((System.ComponentModel.ISupportInitialize)dataGridViewTopFiles).BeginInit();
             SuspendLayout();
             // 
@@ -46,7 +48,7 @@
             titleLbl.Name = "titleLbl";
             titleLbl.Size = new Size(327, 30);
             titleLbl.TabIndex = 0;
-            titleLbl.Text = "Top 10 des fichiers les plus lourd";
+            titleLbl.Text = "Top 15 des fichiers les plus lourd";
             // 
             // dataGridViewTopFiles
             // 
@@ -56,15 +58,16 @@
             dataGridViewTopFiles.AllowUserToResizeRows = false;
             dataGridViewTopFiles.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewTopFiles.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewTopFiles.Columns.AddRange(new DataGridViewColumn[] { nameClm, sizeClm, latestModifyClm, pathClm });
+            dataGridViewTopFiles.Columns.AddRange(new DataGridViewColumn[] { nameClm, size, latestModifyClm, pathClm });
             dataGridViewTopFiles.Location = new Point(3, 61);
             dataGridViewTopFiles.MultiSelect = false;
             dataGridViewTopFiles.Name = "dataGridViewTopFiles";
             dataGridViewTopFiles.ReadOnly = true;
             dataGridViewTopFiles.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewTopFiles.Size = new Size(712, 275);
+            dataGridViewTopFiles.Size = new Size(712, 400);
             dataGridViewTopFiles.TabIndex = 1;
             dataGridViewTopFiles.CellContentClick += dataGridViewTopFiles_CellContentClick;
+            dataGridViewTopFiles.CellFormatting += dataGridViewTopFiles_CellFormatting;
             // 
             // nameClm
             // 
@@ -73,12 +76,12 @@
             nameClm.ReadOnly = true;
             nameClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
-            // sizeClm
+            // size
             // 
-            sizeClm.HeaderText = "Taille";
-            sizeClm.Name = "sizeClm";
-            sizeClm.ReadOnly = true;
-            sizeClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            size.HeaderText = "Taille";
+            size.Name = "size";
+            size.ReadOnly = true;
+            size.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // latestModifyClm
             // 
@@ -97,16 +100,35 @@
             // pathAnalyzed
             // 
             pathAnalyzed.AutoSize = true;
-            pathAnalyzed.Location = new Point(3, 339);
+            pathAnalyzed.Location = new Point(3, 464);
             pathAnalyzed.Name = "pathAnalyzed";
             pathAnalyzed.Size = new Size(136, 15);
             pathAnalyzed.TabIndex = 3;
             pathAnalyzed.Text = "Chemin analysé : C:\\Test";
+            pathAnalyzed.Click += pathAnalyzed_Click;
+            // 
+            // progressBarLbl
+            // 
+            progressBarLbl.AutoSize = true;
+            progressBarLbl.Location = new Point(247, 173);
+            progressBarLbl.Name = "progressBarLbl";
+            progressBarLbl.Size = new Size(199, 15);
+            progressBarLbl.TabIndex = 19;
+            progressBarLbl.Text = "Chargement des données en cours...";
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(275, 191);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(137, 23);
+            progressBar1.TabIndex = 18;
             // 
             // heavierFileUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(progressBarLbl);
+            Controls.Add(progressBar1);
             Controls.Add(pathAnalyzed);
             Controls.Add(dataGridViewTopFiles);
             Controls.Add(titleLbl);
@@ -122,10 +144,12 @@
 
         private Label titleLbl;
         private DataGridView dataGridViewTopFiles;
+        private Label pathAnalyzed;
+        private Label progressBarLbl;
+        private ProgressBar progressBar1;
         private DataGridViewTextBoxColumn nameClm;
-        private DataGridViewTextBoxColumn sizeClm;
+        private DataGridViewTextBoxColumn size;
         private DataGridViewTextBoxColumn latestModifyClm;
         private DataGridViewTextBoxColumn pathClm;
-        private Label pathAnalyzed;
     }
 }

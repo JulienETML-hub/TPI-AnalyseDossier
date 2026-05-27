@@ -4,6 +4,7 @@ using System.Text;
 using TPI_AnalyseDossier.FileSystem;
 using TPI_AnalyseDossier;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 namespace TPI_AnalyseDossier.Services
 {
@@ -29,7 +30,7 @@ namespace TPI_AnalyseDossier.Services
                     try
                     {
                         // En Mo
-                        double size = new FileInfo(file).Length/(1024.0*1024.0);
+                        double size = new FileInfo(file).Length;
 
                         stats.FileCount++;
                         stats.TotalSize += size;

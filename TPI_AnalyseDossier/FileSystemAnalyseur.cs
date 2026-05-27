@@ -3,7 +3,9 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.SKCharts;
 using LiveChartsCore.SkiaSharpView.WinForms;
 using QuestPDF;
+using System.Diagnostics;
 using TPI_AnalyseDossier.FileSystem;
+using TPI_AnalyseDossier.Services;
 
 namespace TPI_AnalyseDossier
 {
@@ -13,6 +15,8 @@ namespace TPI_AnalyseDossier
         private PieChart _pieChart;
         private string selectedPath;
         private DirectoryStats directoryStats;
+        private DatasService datasService;
+        private (string, long)[] top10Folder;
         private UserControl ctrl;
 
         public FileSystemAnalyseur()
@@ -68,31 +72,51 @@ namespace TPI_AnalyseDossier
 
         }
 
-        private void resultBtn_Click(object sender, EventArgs e)
+        private async void resultBtn_Click(object sender, EventArgs e)
         {
             var ctrl = new resultUserControl();
-            ctrl.LoadData(this.selectedPath, this.directoryStats);
+
+            ctrl.DataResultsReady += (data) =>
+            {
+                Debug.WriteLine("CCC");
+                this.datasService = data;
+            };
+
             LoadControl(ctrl);
             backgroundSelection(ctrl);
-            
+
+            await ctrl.LoadData(this.selectedPath, this.directoryStats, this.datasService);
         }
+
+        
         private void heavierFileBtn_Click(object sender, EventArgs e)
         {
 
             var ctrl = new heavierFileUserControl();
-            ctrl.LoadData(this.selectedPath);
-
+            ctrl.DataResultsReady += (data) =>
+            {
+                this.datasService = data;
+            };
+           
             LoadControl(ctrl);
             backgroundSelection(ctrl);
+            ctrl.LoadData(this.selectedPath, this.datasService);
+
         }
-        private void heavierFolderBtn_Click(object sender, EventArgs e)
+        private async void heavierFolderBtn_Click(object sender, EventArgs e)
         {
 
             var ctrl = new heavierFolderUserControl();
-            ctrl.LoadData(this.selectedPath);
+            ctrl.DataResultsReady += (data) =>
+            {
+                this.datasService = data;
+            };
 
             LoadControl(ctrl);
             backgroundSelection(ctrl);
+            await ctrl.LoadData(this.selectedPath, this.datasService);
+
+
 
         }
 

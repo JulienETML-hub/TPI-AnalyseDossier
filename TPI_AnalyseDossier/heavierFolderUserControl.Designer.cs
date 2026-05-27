@@ -29,12 +29,14 @@
         private void InitializeComponent()
         {
             dataGridViewTopFolders = new DataGridView();
-            nameClm = new DataGridViewTextBoxColumn();
-            sizeClm = new DataGridViewTextBoxColumn();
-            latestModifyClm = new DataGridViewTextBoxColumn();
-            pathClm = new DataGridViewTextBoxColumn();
             titleLbl = new Label();
             pathAnalyzed = new Label();
+            progressBarLbl = new Label();
+            progressBar1 = new ProgressBar();
+            nameClm = new DataGridViewTextBoxColumn();
+            size = new DataGridViewTextBoxColumn();
+            latestModifyClm = new DataGridViewTextBoxColumn();
+            pathClm = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)dataGridViewTopFolders).BeginInit();
             SuspendLayout();
             // 
@@ -47,7 +49,7 @@
             dataGridViewTopFolders.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewTopFolders.BorderStyle = BorderStyle.Fixed3D;
             dataGridViewTopFolders.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewTopFolders.Columns.AddRange(new DataGridViewColumn[] { nameClm, sizeClm, latestModifyClm, pathClm });
+            dataGridViewTopFolders.Columns.AddRange(new DataGridViewColumn[] { nameClm, size, latestModifyClm, pathClm });
             dataGridViewTopFolders.Location = new Point(3, 62);
             dataGridViewTopFolders.Name = "dataGridViewTopFolders";
             dataGridViewTopFolders.ReadOnly = true;
@@ -55,34 +57,7 @@
             dataGridViewTopFolders.Size = new Size(712, 275);
             dataGridViewTopFolders.TabIndex = 0;
             dataGridViewTopFolders.CellContentClick += dataGridViewTopFolders_CellContentClick;
-            // 
-            // nameClm
-            // 
-            nameClm.HeaderText = "Nom";
-            nameClm.Name = "nameClm";
-            nameClm.ReadOnly = true;
-            nameClm.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // sizeClm
-            // 
-            sizeClm.HeaderText = "Taille";
-            sizeClm.Name = "sizeClm";
-            sizeClm.ReadOnly = true;
-            sizeClm.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // latestModifyClm
-            // 
-            latestModifyClm.HeaderText = "Dernière modification";
-            latestModifyClm.Name = "latestModifyClm";
-            latestModifyClm.ReadOnly = true;
-            latestModifyClm.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // pathClm
-            // 
-            pathClm.HeaderText = "Chemin";
-            pathClm.Name = "pathClm";
-            pathClm.ReadOnly = true;
-            pathClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            dataGridViewTopFolders.CellFormatting += DataGridViewTopFolders_CellFormatting;
             // 
             // titleLbl
             // 
@@ -103,10 +78,56 @@
             pathAnalyzed.TabIndex = 2;
             pathAnalyzed.Text = "Chemin analysé : C:\\Test";
             // 
+            // progressBarLbl
+            // 
+            progressBarLbl.AutoSize = true;
+            progressBarLbl.Location = new Point(260, 250);
+            progressBarLbl.Name = "progressBarLbl";
+            progressBarLbl.Size = new Size(199, 15);
+            progressBarLbl.TabIndex = 19;
+            progressBarLbl.Text = "Chargement des données en cours...";
+            // 
+            // progressBar1
+            // 
+            progressBar1.Location = new Point(288, 268);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(137, 23);
+            progressBar1.TabIndex = 18;
+            // 
+            // nameClm
+            // 
+            nameClm.HeaderText = "Nom";
+            nameClm.Name = "nameClm";
+            nameClm.ReadOnly = true;
+            nameClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // size
+            // 
+            size.HeaderText = "Taille";
+            size.Name = "size";
+            size.ReadOnly = true;
+            size.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // latestModifyClm
+            // 
+            latestModifyClm.HeaderText = "Dernière modification";
+            latestModifyClm.Name = "latestModifyClm";
+            latestModifyClm.ReadOnly = true;
+            latestModifyClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
+            // pathClm
+            // 
+            pathClm.HeaderText = "Chemin";
+            pathClm.Name = "pathClm";
+            pathClm.ReadOnly = true;
+            pathClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            // 
             // heavierFolderUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(progressBarLbl);
+            Controls.Add(progressBar1);
             Controls.Add(pathAnalyzed);
             Controls.Add(titleLbl);
             Controls.Add(dataGridViewTopFolders);
@@ -121,11 +142,13 @@
         #endregion
 
         private DataGridView dataGridViewTopFolders;
-        private DataGridViewTextBoxColumn nameClm;
-        private DataGridViewTextBoxColumn sizeClm;
-        private DataGridViewTextBoxColumn latestModifyClm;
-        private DataGridViewTextBoxColumn pathClm;
         private Label titleLbl;
         private Label pathAnalyzed;
+        private Label progressBarLbl;
+        private ProgressBar progressBar1;
+        private DataGridViewTextBoxColumn nameClm;
+        private DataGridViewTextBoxColumn size;
+        private DataGridViewTextBoxColumn latestModifyClm;
+        private DataGridViewTextBoxColumn pathClm;
     }
 }

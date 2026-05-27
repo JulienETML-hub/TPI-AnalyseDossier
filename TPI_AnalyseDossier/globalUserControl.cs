@@ -1,6 +1,7 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.WinForms;
+using QuestPDF.Fluent;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,10 +25,16 @@ namespace TPI_AnalyseDossier
 
         private FileSystemItem selectedItem;
         private PieChart _pieChart;
-        public string selectedPath;
+        public string selectedPath = null;
         public event Action<string> DataReadyPath;
         public event Action<DirectoryStats> DataReadyStats;
         private Dictionary<string, int> iconCache = new Dictionary<string, int>();
+        DirectoryStats directoryStats = new DirectoryStats();
+        string downloadsPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads"
+        );
+
         public globalUserControl()
         {
             InitializeComponent();
@@ -48,23 +55,29 @@ namespace TPI_AnalyseDossier
             panelGraphic1.Controls.Add(_pieChart);
             _pieChart.Dock = DockStyle.Fill;
             _pieChart.LegendPosition = LiveChartsCore.Measure.LegendPosition.Right;
-            
+
 
         }
         private async void parcourirBtn_Click_2(object sender, EventArgs e)
         {
-            FolderBrowserDialog dialog = new FolderBrowserDialog();
-            dialog.ShowDialog();
-            if (dialog.SelectedPath != null)
+            using (var dialog = new FolderBrowserDialog())
             {
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return; // 
+                }
                 clearData();
-                this.selectedPath = dialog.SelectedPath;
+                selectedPath = dialog.SelectedPath;
             }
+
             pathSelected(this.selectedPath);
-            
+
+
         }
         private async void pathSelected(string selectedpath)
         {
+
+            this.selectedPath = selectedpath;
             loadingProgressBar.Visible = true;
             loadingLbl.Visible = true;
             panelGraphic1.Visible = true;
@@ -109,8 +122,8 @@ namespace TPI_AnalyseDossier
         {
             // _pieChart.Series est de type : PieSeries<Int>[] 
             _pieChart.Series = filesByExtension
-            .OrderByDescending(file => file.Value) 
-            .Take(5) 
+            .OrderByDescending(file => file.Value)
+            .Take(10)
             .Select(file => new PieSeries<int>
             {
                 Values = new int[] { file.Value },
@@ -129,29 +142,24 @@ namespace TPI_AnalyseDossier
             loadingLbl.BringToFront();
 
             StatisticsService statisticsService = new StatisticsService();
-            DirectoryStats directoryStats = await Task.Run(() => statisticsService.ComputeStats(path));
+            directoryStats = await Task.Run(() => statisticsService.ComputeStats(this.selectedPath));
             DataReadyStats?.Invoke(directoryStats);
             loadingLbl.Visible = false;
             loadingProgressBar.Visible = false;
             panelGraphic1.Visible = true;
             dataUILoad(directoryStats);
-            
+            SaveAnalysisToJson();
         }
         private async void dataUILoad(DirectoryStats directoryStats)
         {
             ListViewItem item = new ListViewItem(directoryStats.DirectoryCount.ToString());
             item.SubItems.Add(directoryStats.FileCount.ToString());
-            item.SubItems.Add(directoryStats.TotalSize.ToString());
-            item.SubItems.Add(directoryStats.AverageFileSize.ToString());
+            item.SubItems.Add(FormatSize(directoryStats.TotalSize));
+            item.SubItems.Add(FormatSize(directoryStats.AverageFileSize));
             item.SubItems.Add(directoryStats.LargestDirectoryPath.ToString());
             item.SubItems.Add(directoryStats.LargestFilePath.ToString());
             item.ToolTipText = directoryStats.LargestDirectoryPath.ToString();
 
-            /* item.SubItems.Add(27.ToString());
-             item.SubItems.Add("123 Mo");
-             item.SubItems.Add("2.1Mo");
-             item.SubItems.Add("Impôts");
-             item.SubItems.Add("Rapport annuel.pdf");*/
             InitChart(directoryStats.FilesByExtension);
             Debug.Write("elements ignorés : " + directoryStats.IgnoredElements.ToString());
             listView1.Items.Add(item);
@@ -182,7 +190,7 @@ namespace TPI_AnalyseDossier
                 node.Nodes.Clear();
 
                 string path = node.Tag.ToString();
-                
+
                 try
                 {
                     // dossiers
@@ -223,17 +231,27 @@ namespace TPI_AnalyseDossier
         }
         private void treeView1_GetDetailsItem(object sender, TreeNodeMouseClickEventArgs e)
         {
-            string path = e.Node.Tag.ToString();
-            FileSystemItem itemSelected = CreateItem(path);
-            changeUIDetails(itemSelected);
-           
+            if (e.Node?.Tag is not string path || string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            try
+            {
+                FileSystemItem itemSelected = CreateItem(path);
+                changeUIDetails(itemSelected);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Accès refusé à cet élément.");
+            }
         }
-       
+
         private void changeUIDetails(FileSystemItem fileSystemItem)
         {
             nameLbl.Text = "Nom : " + fileSystemItem.Name;
             pathLblDetails.Text = "Chemin : " + fileSystemItem.Path;
-            sizeLblDetails.Text = "Taille : " + fileSystemItem.Size + " Ko";
+            sizeLblDetails.Text = "Taille : " + FormatSize(fileSystemItem.Size);
             latestModifyLbl.Text = "Dernière modification : " + fileSystemItem.LastModify.ToString();
 
 
@@ -267,5 +285,157 @@ namespace TPI_AnalyseDossier
             }
         }
 
-    }
-}
+        private void nameLbl_Click(object sender, EventArgs e)
+        {
+
+        }
+        public static string FormatSize(double bytes)
+        {
+            const double KO = 1000;
+            const double MO = 1000 * KO;
+            const double GO = 1000 * MO;
+
+
+            if (bytes >= GO)
+                return (bytes / GO).ToString("0.00") + " Go";
+            if (bytes >= MO)
+                return (bytes / MO).ToString("0.00") + " Mo";
+            if (bytes >= KO)
+                return (bytes / KO).ToString("0.00") + " Ko";
+
+            return bytes + " octets";
+        }
+
+        private void exportPDFBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var chartImage = CaptureChart();
+
+                string downloadsPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    "Downloads"
+                );
+
+                string filePath = Path.Combine(
+                    downloadsPath,
+                    $"Analyse_{DateTime.Now:yyyyMMdd_HHmmss}.pdf"
+                );
+
+                QuestPDF.Fluent.Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+
+                        page.Content().Column(col =>
+                        {
+                            // Titre
+                            col.Item().Text("Rapport d'analyse de dossier")
+                                .FontSize(20)
+                                .Bold();
+
+                            // Date
+                            col.Item().Text($"Date : {DateTime.Now:dd.MM.yyyy HH:mm}");
+
+                            // Chemin
+                            col.Item().Text($"Chemin analysé : {selectedPath}");
+
+                            col.Item().PaddingVertical(10);
+
+                            // Stats 
+                            col.Item().Text("Statistiques :").Bold();
+
+                            col.Item().Text($"Nombre de fichiers : {directoryStats.FileCount}");
+                            col.Item().Text($"Nombre de dossiers : {directoryStats.DirectoryCount}");
+                            col.Item().Text($"Taille totale : {FormatSize(directoryStats.TotalSize)}");
+                            col.Item().Text($"Taille moyenne des fichiers : {FormatSize(directoryStats.AverageFileSize)}");
+                            col.Item().Text($"Plus gros fichier : {directoryStats.LargestFilePath}");
+                            col.Item().Text($"Plus gros dossier : {directoryStats.LargestDirectoryPath}");
+                            col.Item().Text($"Éléments ignorés : {directoryStats.IgnoredElements}");
+
+
+
+                            col.Item().PaddingVertical(10);
+
+                            // Graphique
+                            col.Item().Text("Répartition des fichiers :").Bold();
+
+                            col.Item().Image(chartImage).FitWidth();
+                        });
+                    });
+                })
+                .GeneratePdf(filePath);
+
+                MessageBox.Show($"PDF généré dans :\n{filePath}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur PDF : " + ex.Message);
+            }
+        }
+
+        private byte[] CaptureChart()
+        {
+            using Bitmap bmp = new Bitmap(panelGraphic1.Width, panelGraphic1.Height);
+            panelGraphic1.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+
+            using MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            return ms.ToArray();
+        }
+    
+    private void SaveAnalysisToJson()
+        {
+            try
+            {
+                string tempPath = Path.GetTempPath();
+                string filePath = Path.Combine(tempPath, "analyses.json");
+
+                var analysis = new
+                {
+                    Date = DateTime.Now.ToString("dd.MM.yyyy HH:mm"),
+                    Chemin = selectedPath,
+
+                    NombreFichiers = directoryStats.FileCount,
+                    NombreDossiers = directoryStats.DirectoryCount,
+                    TailleTotale = directoryStats.TotalSize,
+                    TailleMoyenne = directoryStats.AverageFileSize,
+
+                    PlusGrosFichier = directoryStats.LargestFilePath,
+                    PlusGrosFichierTaille = directoryStats.LargestFileSize,
+
+                    PlusGrosDossier = directoryStats.LargestDirectoryPath,
+                    PlusGrosDossierTaille = directoryStats.LargestDirectorySize,
+
+                    ElementsIgnores = directoryStats.IgnoredElements
+                };
+
+                List<object> analyses;
+
+                if (File.Exists(filePath))
+                {
+                    string existingJson = File.ReadAllText(filePath);
+                    analyses = JsonSerializer.Deserialize<List<object>>(existingJson) ?? new List<object>();
+                }
+                else
+                {
+                    analyses = new List<object>();
+                }
+
+
+                analyses.Add(analysis);
+
+
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string newJson = JsonSerializer.Serialize(analyses, options);
+
+                File.WriteAllText(filePath, newJson);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur JSON : " + ex.Message);
+            }
+        }
+    } }

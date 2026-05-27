@@ -9,7 +9,7 @@ namespace TPI_AnalyseDossier.FileSystem
         // Constructor
 
         public FileItem(string path) : base(path) {
-            Size = FormatService.ConvertToMo(new FileInfo(path).Length) ;
+            Size = new FileInfo(path).Length ;
             LastModify = File.GetLastWriteTime(path);
         }
     }

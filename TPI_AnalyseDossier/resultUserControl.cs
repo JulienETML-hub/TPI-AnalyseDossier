@@ -18,48 +18,25 @@ namespace TPI_AnalyseDossier
     public partial class resultUserControl : UserControl
     {
         DirectoryStats directoryStats;
-        private string selectedPath = "test";
+        private string selectedPath = "Aucun chemin n'a été sélectionné pour le moment";
         private CheckedListBox clb = new CheckedListBox();
 
-        private readonly DatasService datasService = new DatasService();
+        private DatasService datasService = new DatasService();
+        public event Action<DatasService> DataResultsReady;
         private bool dataLoaded = false;
+        private int paginationNb = 1;
         public resultUserControl()
         {
 
             InitializeComponent();
             Theme.ApplyTheme(this);
-
+            InitUI();
             dataGridViewResults.SelectionMode = DataGridViewSelectionMode.CellSelect;
-
+            dataGridViewResults.ScrollBars = ScrollBars.Vertical;
 
             minimalSizeNmr.Minimum = 0;
-            minimalSizeNmr.Maximum = 1000;
             minimalSizeNmr.Value = 25;
-
-        }
-
-        private void resultUserControl_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void filtreExtensionCbx_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void searchLbl_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void searchBarTbx_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dataGridViewResults_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
+            paginationLbl.Text = paginationNb.ToString();
 
         }
 
@@ -87,14 +64,16 @@ namespace TPI_AnalyseDossier
                 minimalSize: (int)minimalSizeNmr.Value,
                 sortAscending: sortOrderIsAscending,
                 sortBy: sortedBy,
-                stringSearch:searchBarTbx.Text,
-                maxResults: 15
+                stringSearch: searchBarTbx.Text,
+                skipPage: paginationNb
             );
 
             pathLbl.Text = selectedPath;
 
             dataGridViewResults.Rows.Clear();
-            foreach (FileSystemItem item in files)
+            nbElements.Text = "Nombre de fichiers trouvées : " + files.TotalCount;
+
+            foreach (FileSystemItem item in files.Item1)
             {
 
                 Debug.WriteLine("Dans foreach avant");
@@ -115,32 +94,70 @@ namespace TPI_AnalyseDossier
 
 
         }
-        public async void LoadData(string selectedPath, DirectoryStats directoryStats)
+        public async Task LoadData(string selectedPath, DirectoryStats directoryStats, DatasService? datasServiceArg)
         {
+            if (string.IsNullOrWhiteSpace(selectedPath))
+                return;
 
             this.selectedPath = selectedPath;
-            pathLbl.Text = selectedPath;
             this.directoryStats = directoryStats;
+            nbElements.Text = "Nombre de fichiers trouvées : " + directoryStats.FileCount.ToString() ;
+            InitUI();
+            await LoadServiceData(datasServiceArg);
+            this.dataLoaded = true;
+        }
+        private void InitUI()
+        {
+            pathLbl.Text = selectedPath;
+            
             if (directoryStats != null)
             {
-
                 string[] extensionList = directoryStats.FilesByExtension.Keys.Cast<string>().ToArray();
+
+                clb.Items.Clear();
                 clb.Items.AddRange(extensionList);
 
-                ToolStripDropDown dropDown = new ToolStripDropDown();
-                ToolStripControlHost host = new ToolStripControlHost(clb);
+                var dropDown = new ToolStripDropDown();
+                var host = new ToolStripControlHost(clb);
                 dropDown.Items.Add(host);
-                pathLbl.Text = selectedPath;
-                comboBox1.Click += (s, e) =>
-                {
-                    dropDown.Show(comboBox1, 0, comboBox1.Height);
-                };
-            }
-            // Stock les informations dans datasService, récupérable plus tard avec le datasService.FilterFile
-            await datasService.DatasServiceSearch(selectedPath);
-            dataLoaded = true;
 
+                comboBox1.Click -= ComboBoxClick; 
+                comboBox1.Click += ComboBoxClick;
+
+                _dropDown = dropDown;
+            }
         }
+
+
+        private async Task LoadServiceData(DatasService? datasServiceArg)
+        {
+            if (datasServiceArg == null || datasServiceArg.SelectedPath != selectedPath)
+            {
+                progressBar1.Visible = true;
+                progressBarLbl.Visible = true;
+                progressBar1.Style = ProgressBarStyle.Marquee;
+                await datasService.DatasServiceSearch(selectedPath);
+                await datasService.GetTop10LargestDirectories();
+
+                DataResultsReady?.Invoke(this.datasService);
+            }
+            else
+            {
+                datasService = datasServiceArg;
+            }
+            progressBar1.Visible = false;
+            progressBarLbl.Visible = false;
+        }
+
+
+        private ToolStripDropDown _dropDown;
+
+        private void ComboBoxClick(object? sender, EventArgs e)
+        {
+            _dropDown?.Show(comboBox1, 0, comboBox1.Height);
+        }
+
+
 
         private void minimalSizeNmr_ValueChanged(object sender, EventArgs e)
         {
@@ -153,17 +170,41 @@ namespace TPI_AnalyseDossier
             {
 
                 double mb = (double)e.Value;
-                if (mb >= 1)
+                if (mb >= 1000000000)
                 {
-                    e.Value = mb.ToString() + " MB";
+                    e.Value = (mb / (1000.0*1000.0 * 1000.0)).ToString() + " Go";
+                }
+                else if (mb >= 1000000)
+                {
+                    e.Value = (mb/(1000.0*1000.0)).ToString() + " Mo";
+                }
+                else if(mb >= 1000)
+                {
+                    e.Value = (mb / 1000.0).ToString() + " Ko";
                 }
                 else
                 {
-                    e.Value = (mb*1000.0).ToString() + " KB";
+                    e.Value = mb.ToString() + " octets";
                 }
-                
+
                 e.FormattingApplied = true;
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            paginationNb--;
+            paginationLbl.Text = paginationNb.ToString();
+            this.searchBtn_Click(sender, e);
+        }
+
+        private void nextPageBtn_Click(object sender, EventArgs e)
+        {
+            paginationNb++;
+            paginationLbl.Text = paginationNb.ToString();
+            this.searchBtn_Click(sender, e);
+
+        }
+
     }
 }
