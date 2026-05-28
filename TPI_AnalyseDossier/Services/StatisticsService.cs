@@ -48,8 +48,10 @@ namespace TPI_AnalyseDossier.Services
 
                         if (size > stats.LargestFileSize)
                         {
+                            int last = file.LastIndexOf('\\');
+                            int secondLast = file.LastIndexOf('\\', last - 1);
                             stats.LargestFileSize = size;
-                            stats.LargestFilePath = file;
+                            stats.LargestFilePath = file.Substring(secondLast + 1);
                         }
                     }
                     catch {
@@ -69,8 +71,10 @@ namespace TPI_AnalyseDossier.Services
                 // vérifier si ce dossier est le plus gros
                 if (currentDirSize > stats.LargestDirectorySize)
                 {
+                    int last = path.LastIndexOf('\\');
+                    int secondLast = path.LastIndexOf('\\', last - 1);
                     stats.LargestDirectorySize = currentDirSize;
-                    stats.LargestDirectoryPath = path;
+                    stats.LargestDirectoryPath = path.Substring(secondLast +1);
 
                 }
             }
