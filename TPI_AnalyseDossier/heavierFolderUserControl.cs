@@ -92,21 +92,21 @@ namespace TPI_AnalyseDossier
             {
                 double bytes = Convert.ToDouble(e.Value);
 
-                const double KB = 1000;
-                const double MB = 1000 * KB;
-                const double GB = 1000 * MB;
+                const double KO = 1000;
+                const double MO = 1000 * KO;
+                const double GO = 1000 * MO;
 
-                if (bytes >= GB)
+                if (bytes >= GO)
                 {
-                    e.Value = (bytes / GB).ToString("0.00") + " Go";
+                    e.Value = (bytes / GO).ToString("F2") + " Go";
                 }
-                else if (bytes >= MB)
+                else if (bytes >= MO)
                 {
-                    e.Value = (bytes / MB).ToString("0.00") + " Mo";
+                    e.Value = (bytes / MO).ToString("F2") + " Mo";
                 }
-                else if (bytes >= KB)
+                else if (bytes >= KO)
                 {
-                    e.Value = (bytes / KB).ToString("0.00") + " Ko";
+                    e.Value = (bytes / KO).ToString("F2") + " Ko";
                 }
                 else
                 {

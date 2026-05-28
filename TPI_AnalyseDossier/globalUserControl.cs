@@ -42,8 +42,8 @@ namespace TPI_AnalyseDossier
             listView1.View = View.Details;
             listView1.Columns.Add("Dossier", 50);
             listView1.Columns.Add("Fichier", 50);
-            listView1.Columns.Add("Taille totale", 75);
-            listView1.Columns.Add("Taille moyenne fichier", 130);
+            listView1.Columns.Add("Total", 75);
+            listView1.Columns.Add("Moy. fichier", 130);
             listView1.Columns.Add("Plus grand dossier", 130);
             listView1.Columns.Add("Plus grand fichier", 130);
             loadingProgressBar.Style = ProgressBarStyle.Marquee;
@@ -120,16 +120,21 @@ namespace TPI_AnalyseDossier
 
         private void InitChart(Dictionary<string, int> filesByExtension)
         {
-            // _pieChart.Series est de type : PieSeries<Int>[] 
-            _pieChart.Series = filesByExtension
-            .OrderByDescending(file => file.Value)
-            .Take(10)
-            .Select(file => new PieSeries<int>
+            if (filesByExtension == null || filesByExtension.Count == 0)
             {
-                Values = new int[] { file.Value },
-                Name = file.Key
-            })
-            .ToArray();
+                _pieChart.Series = Array.Empty<ISeries>();
+                return;
+            }
+
+            _pieChart.Series = filesByExtension
+                .OrderByDescending(file => file.Value)
+                .Take(10)
+                .Select(file => new PieSeries<int>
+                {
+                    Values = new int[] { file.Value },
+                    Name = file.Key
+                })
+                .ToArray();
         }
 
 
@@ -152,19 +157,59 @@ namespace TPI_AnalyseDossier
         }
         private async void dataUILoad(DirectoryStats directoryStats)
         {
-            ListViewItem item = new ListViewItem(directoryStats.DirectoryCount.ToString());
-            item.SubItems.Add(directoryStats.FileCount.ToString());
-            item.SubItems.Add(FormatSize(directoryStats.TotalSize));
-            item.SubItems.Add(FormatSize(directoryStats.AverageFileSize));
-            item.SubItems.Add(directoryStats.LargestDirectoryPath.ToString());
-            item.SubItems.Add(directoryStats.LargestFilePath.ToString());
-            item.ToolTipText = directoryStats.LargestDirectoryPath.ToString();
+            try
+            {
+                if (directoryStats == null)
+                    return;
 
-            InitChart(directoryStats.FilesByExtension);
-            Debug.Write("elements ignorés : " + directoryStats.IgnoredElements.ToString());
-            listView1.Items.Add(item);
-            treeView1.ImageList = imageList2;
+                listView1.Items.Clear();
+
+                var item = new ListViewItem(directoryStats.DirectoryCount.ToString());
+
+                item.SubItems.Add(directoryStats.FileCount.ToString());
+                item.SubItems.Add(FormatSize(directoryStats.TotalSize));
+
+                item.SubItems.Add(FormatSize(
+                    directoryStats.FileCount > 0 ? directoryStats.AverageFileSize : 0
+                ));
+
+                item.SubItems.Add(
+                    string.IsNullOrEmpty(directoryStats.LargestDirectoryPath)
+                    ? "Aucun dossier"
+                    : directoryStats.LargestDirectoryPath
+                );
+
+                item.SubItems.Add(
+                    string.IsNullOrEmpty(directoryStats.LargestFilePath)
+                    ? "Aucun fichier"
+                    : directoryStats.LargestFilePath
+                );
+
+                if (directoryStats.FilesByExtension != null && directoryStats.FilesByExtension.Count > 0)
+                {
+                    InitChart(directoryStats.FilesByExtension);
+                }
+                else
+                {
+                    _pieChart.Series = Array.Empty<ISeries>();
+                }
+
+                listView1.Items.Add(item);
+
+                treeView1.ImageList = imageList2;
+
+                if (listView1.Columns.Count > 0)
+                {
+                    listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                    listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Erreur UI Load : " + ex.Message);
+            }
         }
+
         private async void LoadDirectory(string path)
         {
             InitTreeview(this.selectedPath);
@@ -349,9 +394,10 @@ namespace TPI_AnalyseDossier
                             col.Item().Text($"Nombre de fichiers : {directoryStats.FileCount}");
                             col.Item().Text($"Nombre de dossiers : {directoryStats.DirectoryCount}");
                             col.Item().Text($"Taille totale : {FormatSize(directoryStats.TotalSize)}");
-                            col.Item().Text($"Taille moyenne des fichiers : {FormatSize(directoryStats.AverageFileSize)}");
-                            col.Item().Text($"Plus gros fichier : {directoryStats.LargestFilePath}");
-                            col.Item().Text($"Plus gros dossier : {directoryStats.LargestDirectoryPath}");
+                            col.Item().Text($"Taille moyenne des fichiers : {FormatSize(directoryStats.FileCount > 0 ? directoryStats.AverageFileSize : 0)}");
+
+                            col.Item().Text($"Plus gros fichier : {(string.IsNullOrEmpty(directoryStats.LargestFilePath) ? "Aucun fichier" : directoryStats.LargestFilePath)}");
+                            col.Item().Text($"Plus gros dossier : {(string.IsNullOrEmpty(directoryStats.LargestDirectoryPath) ? "Aucun dossier" : directoryStats.LargestDirectoryPath)}");
                             col.Item().Text($"Éléments ignorés : {directoryStats.IgnoredElements}");
 
 
@@ -384,8 +430,8 @@ namespace TPI_AnalyseDossier
             bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             return ms.ToArray();
         }
-    
-    private void SaveAnalysisToJson()
+
+        private void SaveAnalysisToJson()
         {
             try
             {
@@ -395,21 +441,30 @@ namespace TPI_AnalyseDossier
                 var analysis = new
                 {
                     Date = DateTime.Now.ToString("dd.MM.yyyy HH:mm"),
-                    Chemin = selectedPath,
+                    Chemin = selectedPath ?? "N/A",
 
                     NombreFichiers = directoryStats.FileCount,
                     NombreDossiers = directoryStats.DirectoryCount,
                     TailleTotale = directoryStats.TotalSize,
-                    TailleMoyenne = directoryStats.AverageFileSize,
+                    TailleMoyenne = directoryStats.FileCount > 0
+                    ? directoryStats.AverageFileSize
+                    : 0,
 
-                    PlusGrosFichier = directoryStats.LargestFilePath,
+                    PlusGrosFichier = string.IsNullOrEmpty(directoryStats.LargestFilePath)
+                    ? "Aucun fichier"
+                    : directoryStats.LargestFilePath,
+
                     PlusGrosFichierTaille = directoryStats.LargestFileSize,
 
-                    PlusGrosDossier = directoryStats.LargestDirectoryPath,
+                    PlusGrosDossier = string.IsNullOrEmpty(directoryStats.LargestDirectoryPath)
+                    ? "Aucun dossier"
+                    : directoryStats.LargestDirectoryPath,
+
                     PlusGrosDossierTaille = directoryStats.LargestDirectorySize,
 
                     ElementsIgnores = directoryStats.IgnoredElements
                 };
+
 
                 List<object> analyses;
 
@@ -438,4 +493,6 @@ namespace TPI_AnalyseDossier
                 MessageBox.Show("Erreur JSON : " + ex.Message);
             }
         }
-    } }
+
+    }
+}

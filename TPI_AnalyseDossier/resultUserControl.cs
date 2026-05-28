@@ -172,19 +172,19 @@ namespace TPI_AnalyseDossier
                 double mb = (double)e.Value;
                 if (mb >= 1000000000)
                 {
-                    e.Value = (mb / (1000.0*1000.0 * 1000.0)).ToString() + " Go";
+                    e.Value = (mb / (1000.0*1000.0 * 1000.0)).ToString("F2") + " Go";
                 }
                 else if (mb >= 1000000)
                 {
-                    e.Value = (mb/(1000.0*1000.0)).ToString() + " Mo";
+                    e.Value = (mb/(1000.0*1000.0)).ToString("F2") + " Mo";
                 }
                 else if(mb >= 1000)
                 {
-                    e.Value = (mb / 1000.0).ToString() + " Ko";
+                    e.Value = (mb / 1000.0).ToString("F2") + " Ko";
                 }
                 else
                 {
-                    e.Value = mb.ToString() + " octets";
+                    e.Value = mb.ToString("F2") + " octets";
                 }
 
                 e.FormattingApplied = true;

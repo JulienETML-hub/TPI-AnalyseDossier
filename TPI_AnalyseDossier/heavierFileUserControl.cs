@@ -60,11 +60,11 @@ namespace TPI_AnalyseDossier
                 double octets = (double)e.Value;
                 if (octets >= 1000000)
                 {
-                    e.Value = (octets / (1000.0 * 1000.0)).ToString() + " Mo";
+                    e.Value = (octets / (1000.0 * 1000.0)).ToString("F2") + " Mo";
                 }
                 else if (octets >= 1000)
                 {
-                    e.Value = (octets / 1000.0).ToString() + " Ko";
+                    e.Value = (octets / 1000.0).ToString("F2") + " Ko";
                 }
                 else
                 {
@@ -83,6 +83,7 @@ namespace TPI_AnalyseDossier
                 sortAscending: false,
                 sortBy: "size"
             );
+
             foreach (var item in files.Item1)
             {
                 insertElementIntoDataGrid(item);
