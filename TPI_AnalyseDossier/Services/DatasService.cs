@@ -1,4 +1,5 @@
 ﻿using LiveChartsCore.SkiaSharpView;
+using OpenTK.Graphics.ES11;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ namespace TPI_AnalyseDossier.Services
         private List<FileInfo> totalFileInfo;
         private string selectedPath;
         private int accesrefuse = 0;
-        private List<(string path, long size)> directoriesWithSize = new();
+        private List<(string path, long size)> directoriesWithSize;
         public (string path, long size)[] directoriesWithSizeTop10;
         public string SelectedPath { get => selectedPath; set => selectedPath = value; }
 
@@ -22,6 +23,7 @@ namespace TPI_AnalyseDossier.Services
         {
             this.allDirectories = new List<String>();
             this.totalFileInfo = new List<FileInfo>();
+            this.directoriesWithSize = new List<(string path, long size)>();
         }
 
         private long SearchSubDirectory(string path)
@@ -60,14 +62,14 @@ namespace TPI_AnalyseDossier.Services
                         _ = fileInfo.Length;
                         totalSize += fileInfo.Length;
 
-                        this.totalFileInfo.Add(fileInfo); // ✅ tu gardes ton comportement actuel
+                        this.totalFileInfo.Add(fileInfo); 
                     }
                     catch
                     {
                     }
                 }
 
-                // ✅ stocke la taille du dossier
+
                 directoriesWithSize.Add((path, totalSize));
             }
             catch (UnauthorizedAccessException)
@@ -96,21 +98,56 @@ namespace TPI_AnalyseDossier.Services
                 SearchSubDirectory(path);
             });
         }
-        public async Task GetTop10LargestDirectories()
-        {
 
-            await Task.Run(() =>
+        public async Task<(string, long)[]> GetTopLargestDirectories(int i)
+        {
+            return await Task.Run(() =>
             {
-                this.directoriesWithSizeTop10 = this.directoriesWithSize
-                    .OrderByDescending(d => d.size)
-                    .Skip(1)
-                    .Take(10)
-                    .Reverse()
+                return this.directoriesWithSize
+                    .OrderByDescending(d => d.Item2).Skip(1)
+                    .Take(i)
                     .ToArray();
             });
+        }
+        public async Task<int> getDirectoriesCount()
+        {
+            return this.directoriesWithSize.Count();
+        }
+        public async Task<int> getFilesCount()
+        {
+            return this.totalFileInfo.Count();
+        }
+        public async Task<long> getTotalFileSize()
+        {
+            return this.totalFileInfo.Sum(f => f.Length);
+        }
+        public async Task<double> getAvgFileSize()
+        {
+            return this.totalFileInfo.Average(f => f.Length);
+        }
+        public async Task<Dictionary<string, long>> getAlldir() {
+             return directoriesWithSize.ToDictionary(d => d.path, d => d.size);
 
         }
-
+        public async Task<string> GetMaxFileName()
+        {
+            return await Task.Run(() =>
+            {
+                var maxFile = this.totalFileInfo.MaxBy(f => f.Length);
+                return maxFile?.FullName ?? "Aucun fichier";
+            });
+        }
+        public Dictionary<string, int> GetFilesByExtension()
+        {
+            return this.totalFileInfo
+                .Select(f => string.IsNullOrEmpty(f.Extension) ? "sans extension" : f.Extension)
+                .GroupBy(ext => ext)
+                .ToDictionary(g => g.Key, g => g.Count());
+        }
+        public async Task<List<FileInfo>> GetAllFilesInfo()
+        {
+            return this.totalFileInfo;
+        }
         /// <summary>
         /// Applique les filtres et le tri sur les fichiers collectés par DatasServiceSearch.
         /// </summary>

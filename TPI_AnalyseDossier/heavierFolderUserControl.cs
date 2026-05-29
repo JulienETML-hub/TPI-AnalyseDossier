@@ -18,14 +18,14 @@ namespace TPI_AnalyseDossier
         private string selectedPath;
         private DatasService datasService = new DatasService();
         public event Action<DatasService> DataResultsReady;
-
+        private (string, long)[] Top10DirBySize;
 
         private bool dataLoaded;
         public heavierFolderUserControl()
         {
             InitializeComponent();
             Theme.ApplyTheme(this);
-            
+
             dataGridViewTopFolders.SelectionMode = DataGridViewSelectionMode.CellSelect;
         }
 
@@ -45,46 +45,49 @@ namespace TPI_AnalyseDossier
 
             this.selectedPath = selectedPath;
 
-            
+
             await LoadServiceData(datasServiceArg);
             InitUI();
             this.dataLoaded = true;
         }
         private async Task LoadServiceData(DatasService? datasServiceArg)
         {
-            if (1==2|| datasServiceArg == null || datasServiceArg.SelectedPath != selectedPath)
+            if (1 == 2 || datasServiceArg == null || datasServiceArg.SelectedPath != selectedPath)
             {
                 progressBar1.Visible = true;
                 progressBarLbl.Visible = true;
                 progressBar1.Style = ProgressBarStyle.Marquee;
                 await datasService.DatasServiceSearch(selectedPath);
-                await datasService.GetTop10LargestDirectories();
                 DataResultsReady?.Invoke(this.datasService);
             }
             else
             {
                 datasService = datasServiceArg;
-               
+
             }
+            this.Top10DirBySize = await datasService.GetTopLargestDirectories(10);
+
             progressBar1.Visible = false;
             progressBarLbl.Visible = false;
         }
         private void InitUI()
         {
             dataGridViewTopFolders.Rows.Clear();
-            foreach (var item in datasService.directoriesWithSizeTop10)
+            foreach (var item in this.Top10DirBySize.Reverse())
             {
-                DirectoryItem item2 = new DirectoryItem(item.path);
-                item2.Size = item.size;
+                DirectoryItem item2 = new DirectoryItem(item.Item1);
+                item2.Size = item.Item2;
                 insertElementIntoDataGrid(item2);
             }
             pathAnalyzed.Text = this.selectedPath;
         }
-        private void insertElementIntoDataGrid(DirectoryItem directoryItem)
+        private void insertElementIntoDataGrid(FileSystemItem fileSystemItem)
         {
-
-            dataGridViewTopFolders.Rows.Insert(0, directoryItem.Name, directoryItem.Size, directoryItem.LastModify, directoryItem.Path);
-
+            var cell = new DataGridViewTextBoxCell();
+            cell.Value = FormatService.EllipsizePath(fileSystemItem.Path, 30);
+            cell.Tag = fileSystemItem.Path;
+            dataGridViewTopFolders.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, null);
+            dataGridViewTopFolders.Rows[0].Cells[3] = cell;
         }
         private void DataGridViewTopFolders_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -117,6 +120,19 @@ namespace TPI_AnalyseDossier
             }
         }
 
+        private void dataGridViewTopFolders_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                var cell = dataGridViewTopFolders.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
+                string fullPath = cell.Tag?.ToString();
+
+                if (!string.IsNullOrEmpty(fullPath))
+                {
+                    Clipboard.SetText(fullPath);
+                }
+            }
+        }
     }
 }

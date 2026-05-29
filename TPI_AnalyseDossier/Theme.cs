@@ -39,14 +39,7 @@ namespace TPI_AnalyseDossier
                         c.BackColor = Theme.Surface;
                         break;
 
-                    case Button btn:
-                        btn.BackColor = Theme.Surface;
-                        btn.ForeColor = Theme.Text;
-                        btn.FlatStyle = FlatStyle.Flat;
-                        btn.FlatAppearance.BorderSize = 0;
-                        btn.FlatAppearance.MouseOverBackColor = Theme.SurfaceLight;
-                        btn.FlatAppearance.MouseDownBackColor = Theme.Accent;
-                        break;
+                  
 
                     case Label lbl:
                         lbl.ForeColor = Theme.Text;

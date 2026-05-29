@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             titleLbl = new Label();
             dataGridViewTopFiles = new DataGridView();
             nameClm = new DataGridViewTextBoxColumn();
@@ -46,9 +47,9 @@
             titleLbl.Font = new Font("Segoe UI", 16F);
             titleLbl.Location = new Point(174, 15);
             titleLbl.Name = "titleLbl";
-            titleLbl.Size = new Size(327, 30);
+            titleLbl.Size = new Size(336, 30);
             titleLbl.TabIndex = 0;
-            titleLbl.Text = "Top 15 des fichiers les plus lourd";
+            titleLbl.Text = "Top 15 des fichiers les plus lourds";
             // 
             // dataGridViewTopFiles
             // 
@@ -56,42 +57,57 @@
             dataGridViewTopFiles.AllowUserToDeleteRows = false;
             dataGridViewTopFiles.AllowUserToResizeColumns = false;
             dataGridViewTopFiles.AllowUserToResizeRows = false;
-            dataGridViewTopFiles.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewTopFiles.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders;
             dataGridViewTopFiles.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewTopFiles.Columns.AddRange(new DataGridViewColumn[] { nameClm, size, latestModifyClm, pathClm });
-            dataGridViewTopFiles.Location = new Point(3, 61);
+            dataGridViewTopFiles.Location = new Point(3, 58);
             dataGridViewTopFiles.MultiSelect = false;
             dataGridViewTopFiles.Name = "dataGridViewTopFiles";
             dataGridViewTopFiles.ReadOnly = true;
+            dataGridViewTopFiles.RowHeadersWidth = 38;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 10F);
+            dataGridViewTopFiles.RowsDefaultCellStyle = dataGridViewCellStyle1;
             dataGridViewTopFiles.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewTopFiles.Size = new Size(712, 400);
+            dataGridViewTopFiles.Size = new Size(712, 395);
             dataGridViewTopFiles.TabIndex = 1;
             dataGridViewTopFiles.CellContentClick += dataGridViewTopFiles_CellContentClick;
+            dataGridViewTopFiles.CellDoubleClick += dataGridViewTopFiles_CellDoubleClick;
             dataGridViewTopFiles.CellFormatting += dataGridViewTopFiles_CellFormatting;
             // 
             // nameClm
             // 
+            nameClm.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            nameClm.FillWeight = 10.1522827F;
             nameClm.HeaderText = "Nom";
             nameClm.Name = "nameClm";
             nameClm.ReadOnly = true;
             nameClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            nameClm.Width = 200;
             // 
             // size
             // 
+            size.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            size.FillWeight = 10.1522827F;
             size.HeaderText = "Taille";
             size.Name = "size";
             size.ReadOnly = true;
             size.SortMode = DataGridViewColumnSortMode.NotSortable;
+            size.Width = 39;
             // 
             // latestModifyClm
             // 
+            latestModifyClm.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            latestModifyClm.FillWeight = 10.1522827F;
             latestModifyClm.HeaderText = "Dernière modification";
             latestModifyClm.Name = "latestModifyClm";
             latestModifyClm.ReadOnly = true;
             latestModifyClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            latestModifyClm.Width = 115;
             // 
             // pathClm
             // 
+            pathClm.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            pathClm.FillWeight = 369.543152F;
             pathClm.HeaderText = "Chemin";
             pathClm.Name = "pathClm";
             pathClm.ReadOnly = true;
@@ -100,7 +116,7 @@
             // pathAnalyzed
             // 
             pathAnalyzed.AutoSize = true;
-            pathAnalyzed.Location = new Point(3, 464);
+            pathAnalyzed.Location = new Point(0, 456);
             pathAnalyzed.Name = "pathAnalyzed";
             pathAnalyzed.Size = new Size(136, 15);
             pathAnalyzed.TabIndex = 3;
@@ -133,7 +149,7 @@
             Controls.Add(dataGridViewTopFiles);
             Controls.Add(titleLbl);
             Name = "heavierFileUserControl";
-            Size = new Size(718, 540);
+            Size = new Size(718, 489);
             Load += heavierFileUserControl_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewTopFiles).EndInit();
             ResumeLayout(false);

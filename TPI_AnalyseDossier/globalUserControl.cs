@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using TPI_AnalyseDossier.FileSystem;
 using TPI_AnalyseDossier.Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace TPI_AnalyseDossier
 {
     public partial class globalUserControl : UserControl
@@ -28,8 +29,13 @@ namespace TPI_AnalyseDossier
         public string selectedPath = null;
         public event Action<string> DataReadyPath;
         public event Action<DirectoryStats> DataReadyStats;
+        public event Action<DatasService> DataResultsReady;
+        private DatasService datasService = new DatasService();
+        private Dictionary<string, long> dirDict;
+        private List<FileInfo> allFilesInfo;
+
         private Dictionary<string, int> iconCache = new Dictionary<string, int>();
-        DirectoryStats directoryStats = new DirectoryStats();
+        private bool dataLoaded;
         string downloadsPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             "Downloads"
@@ -50,13 +56,44 @@ namespace TPI_AnalyseDossier
             loadingLbl.Visible = false;
             loadingProgressBar.Visible = false;
             loadingLbl.BringToFront();
-            panelGraphic1.SendToBack();
+            //panelGraphic1.SendToBack();
             _pieChart = new PieChart();
             panelGraphic1.Controls.Add(_pieChart);
             _pieChart.Dock = DockStyle.Fill;
             _pieChart.LegendPosition = LiveChartsCore.Measure.LegendPosition.Right;
+            treeView1.ImageList = imageList2;
+        }
+        public async Task LoadData(string selectedPath, DatasService? datasServiceArg)
+        {
+            if (string.IsNullOrWhiteSpace(selectedPath))
+                return;
 
+            this.selectedPath = selectedPath;
 
+            await LoadServiceData(datasServiceArg);
+            pathSelected(selectedPath);
+            this.dataLoaded = true;
+        }
+        private async Task LoadServiceData(DatasService? datasServiceArg)
+        {
+            if (datasServiceArg == null || datasServiceArg.SelectedPath != selectedPath)
+            {
+                loadingLbl.Visible = true;
+                loadingProgressBar.Visible = true;
+                loadingProgressBar.Style = ProgressBarStyle.Marquee;
+                await datasService.DatasServiceSearch(selectedPath);
+                DataResultsReady?.Invoke(this.datasService);
+
+                
+            }
+            else
+            {
+                datasService = datasServiceArg;
+            }
+            this.allFilesInfo = await datasService.GetAllFilesInfo();
+            this.dirDict = await datasService.getAlldir();
+            loadingProgressBar.Visible = false;
+            loadingLbl.Visible = false;
         }
         private async void parcourirBtn_Click_2(object sender, EventArgs e)
         {
@@ -64,7 +101,7 @@ namespace TPI_AnalyseDossier
             {
                 if (dialog.ShowDialog() != DialogResult.OK)
                 {
-                    return; // 
+                    return;
                 }
                 clearData();
                 selectedPath = dialog.SelectedPath;
@@ -84,42 +121,44 @@ namespace TPI_AnalyseDossier
             panelGraphic1.SendToBack();
             pathLbl.Text = this.selectedPath;
             DataReadyPath?.Invoke(this.selectedPath);
-            LoadStatistics(this.selectedPath);
+            await LoadServiceData(this.datasService);
             LoadDirectory(this.selectedPath);
+            LoadStatistics();
         }
         private void clearData()
         {
-            // 🔹 Reset données internes
+            //  Reset données internes
             selectedPath = null;
             selectedItem = null;
 
-            // 🔹 Reset labels principaux
+            //  Reset labels principaux
             pathLbl.Text = "";
             nameLbl.Text = "Nom :";
             pathLblDetails.Text = "Chemin :";
             sizeLblDetails.Text = "Taille :";
             latestModifyLbl.Text = "Dernière modification :";
 
-            // 🔹 Reset ListView (stats)
+            //  Reset ListView (stats)
             listView1.Items.Clear();
 
-            // 🔹 Reset TreeView
+            //  Reset TreeView
             treeView1.Nodes.Clear();
 
-            // 🔹 Reset chart
+            //  Reset chart
             _pieChart.Series = Array.Empty<ISeries>();
 
-            // 🔹 Reset loading UI
+            //  Reset loading UI
             loadingProgressBar.Visible = false;
             loadingLbl.Visible = false;
 
-            // 🔹 Reset affichage panel graphique
+            //  Reset affichage panel graphique
             panelGraphic1.Visible = false;
             panelGraphic1.SendToBack();
         }
 
         private void InitChart(Dictionary<string, int> filesByExtension)
         {
+
             if (filesByExtension == null || filesByExtension.Count == 0)
             {
                 _pieChart.Series = Array.Empty<ISeries>();
@@ -139,55 +178,44 @@ namespace TPI_AnalyseDossier
 
 
 
-        private async void LoadStatistics(string path)
+        private async void LoadStatistics()
         {
-            loadingProgressBar.Style = ProgressBarStyle.Marquee;
-            loadingProgressBar.Visible = true;
-            loadingLbl.Visible = true;
-            loadingLbl.BringToFront();
-
-            StatisticsService statisticsService = new StatisticsService();
-            directoryStats = await Task.Run(() => statisticsService.ComputeStats(this.selectedPath));
-            DataReadyStats?.Invoke(directoryStats);
-            loadingLbl.Visible = false;
-            loadingProgressBar.Visible = false;
-            panelGraphic1.Visible = true;
-            dataUILoad(directoryStats);
+            dataUILoad();
             SaveAnalysisToJson();
         }
-        private async void dataUILoad(DirectoryStats directoryStats)
+        private async void dataUILoad()
         {
             try
             {
-                if (directoryStats == null)
+                if (this.datasService == null)
+                {
                     return;
+                }
 
                 listView1.Items.Clear();
+                int dirCount = await this.datasService.getDirectoriesCount();
+                int fileCount = await this.datasService.getFilesCount();
+                double avgFileSize = await this.datasService.getAvgFileSize();
+                double totalFileSize = await this.datasService.getTotalFileSize();
+                var topDir = await this.datasService.GetTopLargestDirectories(1);
+                string largestDir = topDir.Length > 0 ? topDir[0].Item1 : "Aucun dossier";
+                string largestFile = await this.datasService.GetMaxFileName();
+                var item = new ListViewItem(dirCount.ToString());
 
-                var item = new ListViewItem(directoryStats.DirectoryCount.ToString());
-
-                item.SubItems.Add(directoryStats.FileCount.ToString());
-                item.SubItems.Add(FormatSize(directoryStats.TotalSize));
-
-                item.SubItems.Add(FormatSize(
-                    directoryStats.FileCount > 0 ? directoryStats.AverageFileSize : 0
-                ));
-
-                item.SubItems.Add(
-                    string.IsNullOrEmpty(directoryStats.LargestDirectoryPath)
-                    ? "Aucun dossier"
-                    : directoryStats.LargestDirectoryPath
-                );
-
-                item.SubItems.Add(
-                    string.IsNullOrEmpty(directoryStats.LargestFilePath)
-                    ? "Aucun fichier"
-                    : directoryStats.LargestFilePath
-                );
-
-                if (directoryStats.FilesByExtension != null && directoryStats.FilesByExtension.Count > 0)
+                item.SubItems.Add(fileCount.ToString());
+                item.SubItems.Add(FormatSize(totalFileSize).ToString());
+                if (fileCount > 0)
                 {
-                    InitChart(directoryStats.FilesByExtension);
+                    item.SubItems.Add(FormatSize(Convert.ToDouble(avgFileSize)));
+                }
+
+                item.SubItems.Add(FormatService.EllipsizePath(largestDir,30));
+
+                item.SubItems.Add(FormatService.EllipsizePath(largestFile,30));
+
+                if (datasService.GetFilesByExtension() != null && datasService.GetFilesByExtension().Count > 0)
+                {
+                    InitChart(datasService.GetFilesByExtension());
                 }
                 else
                 {
@@ -223,6 +251,7 @@ namespace TPI_AnalyseDossier
             root.Nodes.Add("loading...");
 
             treeView1.Nodes.Add(root);
+            root.Expand();
         }
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
@@ -243,11 +272,13 @@ namespace TPI_AnalyseDossier
                     {
                         TreeNode child = new TreeNode(Path.GetFileName(dir));
                         child.Tag = dir;
+
                         child.Nodes.Add("loading...");
                         child.ImageIndex = 0;
                         child.SelectedImageIndex = 0;
                         node.Nodes.Add(child);
                     }
+
 
                     // fichiers
                     foreach (var file in Directory.EnumerateFiles(path))
@@ -255,7 +286,6 @@ namespace TPI_AnalyseDossier
                         TreeNode fileNode = new TreeNode(Path.GetFileName(file));
                         fileNode.Tag = file;
                         string ext = Path.GetExtension(file).ToLower();
-
                         if (!iconCache.ContainsKey(ext))
                         {
                             Icon icon = Icon.ExtractAssociatedIcon(file);
@@ -267,6 +297,7 @@ namespace TPI_AnalyseDossier
                         fileNode.SelectedImageIndex = fileNode.ImageIndex;
                         node.Nodes.Add(fileNode);
                     }
+
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -274,6 +305,8 @@ namespace TPI_AnalyseDossier
                 }
             }
         }
+
+
         private void treeView1_GetDetailsItem(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node?.Tag is not string path || string.IsNullOrEmpty(path))
@@ -284,6 +317,17 @@ namespace TPI_AnalyseDossier
             try
             {
                 FileSystemItem itemSelected = CreateItem(path);
+                if(itemSelected.Size == 0)
+                {
+                    try
+                    {
+                        itemSelected.Size = dirDict[itemSelected.Path];
+                    }
+                    catch
+                    {
+
+                    }
+                }
                 changeUIDetails(itemSelected);
             }
             catch (UnauthorizedAccessException)
@@ -295,7 +339,7 @@ namespace TPI_AnalyseDossier
         private void changeUIDetails(FileSystemItem fileSystemItem)
         {
             nameLbl.Text = "Nom : " + fileSystemItem.Name;
-            pathLblDetails.Text = "Chemin : " + fileSystemItem.Path;
+            pathLblDetails.Text = "Chemin : " + FormatService.EllipsizePath( fileSystemItem.Path,65,true);
             sizeLblDetails.Text = "Taille : " + FormatSize(fileSystemItem.Size);
             latestModifyLbl.Text = "Dernière modification : " + fileSystemItem.LastModify.ToString();
 
@@ -314,19 +358,6 @@ namespace TPI_AnalyseDossier
             else
             {
                 throw new FileNotFoundException("Le chemin n'existe pas", path);
-            }
-        }
-        public void LoadData(string selectedPath, DirectoryStats directoryStats)
-        {
-            if (selectedPath != null)
-            {
-                this.selectedPath = selectedPath;
-                pathLbl.Text = selectedPath;
-                InitTreeview(selectedPath);
-            }
-            if (directoryStats != null)
-            {
-                dataUILoad(directoryStats);
             }
         }
 
@@ -351,7 +382,7 @@ namespace TPI_AnalyseDossier
             return bytes + " octets";
         }
 
-        private void exportPDFBtn_Click(object sender, EventArgs e)
+        private async void exportPDFBtn_Click(object sender, EventArgs e)
         {
             try
             {
@@ -366,6 +397,15 @@ namespace TPI_AnalyseDossier
                     downloadsPath,
                     $"Analyse_{DateTime.Now:yyyyMMdd_HHmmss}.pdf"
                 );
+
+                int fileCount = await datasService.getFilesCount();
+                int dirCount = await datasService.getDirectoriesCount();
+                long totalSize = await datasService.getTotalFileSize();
+                double avgSize = fileCount > 0 ? await datasService.getAvgFileSize() : 0;
+                var topDir = await this.datasService.GetTopLargestDirectories(1);
+                string largestDir = topDir.Length > 0 ? topDir[0].Item1 : "Aucun dossier";
+
+                string largestFile = await datasService.GetMaxFileName() ?? "Aucun fichier";
 
                 QuestPDF.Fluent.Document.Create(container =>
                 {
@@ -391,15 +431,13 @@ namespace TPI_AnalyseDossier
                             // Stats 
                             col.Item().Text("Statistiques :").Bold();
 
-                            col.Item().Text($"Nombre de fichiers : {directoryStats.FileCount}");
-                            col.Item().Text($"Nombre de dossiers : {directoryStats.DirectoryCount}");
-                            col.Item().Text($"Taille totale : {FormatSize(directoryStats.TotalSize)}");
-                            col.Item().Text($"Taille moyenne des fichiers : {FormatSize(directoryStats.FileCount > 0 ? directoryStats.AverageFileSize : 0)}");
+                            col.Item().Text($"Nombre de fichiers : {fileCount}");
+                            col.Item().Text($"Nombre de dossiers : {dirCount}");
+                            col.Item().Text($"Taille totale : {FormatSize(totalSize)}");
+                            col.Item().Text($"Taille moyenne des fichiers : {FormatSize(avgSize)}");
 
-                            col.Item().Text($"Plus gros fichier : {(string.IsNullOrEmpty(directoryStats.LargestFilePath) ? "Aucun fichier" : directoryStats.LargestFilePath)}");
-                            col.Item().Text($"Plus gros dossier : {(string.IsNullOrEmpty(directoryStats.LargestDirectoryPath) ? "Aucun dossier" : directoryStats.LargestDirectoryPath)}");
-                            col.Item().Text($"Éléments ignorés : {directoryStats.IgnoredElements}");
-
+                            col.Item().Text($"Plus gros fichier : {largestFile}");
+                            col.Item().Text($"Plus gros dossier : {largestDir}");
 
 
                             col.Item().PaddingVertical(10);
@@ -421,6 +459,7 @@ namespace TPI_AnalyseDossier
             }
         }
 
+
         private byte[] CaptureChart()
         {
             using Bitmap bmp = new Bitmap(panelGraphic1.Width, panelGraphic1.Height);
@@ -431,40 +470,38 @@ namespace TPI_AnalyseDossier
             return ms.ToArray();
         }
 
-        private void SaveAnalysisToJson()
+        private async void SaveAnalysisToJson()
         {
             try
             {
                 string tempPath = Path.GetTempPath();
                 string filePath = Path.Combine(tempPath, "analyses.json");
 
+                int fileCount = await datasService.getFilesCount();
+                int dirCount = await datasService.getDirectoriesCount();
+                long totalSize = await datasService.getTotalFileSize();
+                double avgSize = fileCount > 0 ? await datasService.getAvgFileSize() : 0;
+                var topDir = await this.datasService.GetTopLargestDirectories(1);
+                string largestDir = topDir.Length > 0 ? topDir[0].Item1 : "Aucun dossier";
+
+                string largestFile = await datasService.GetMaxFileName() ?? "Aucun fichier";
                 var analysis = new
                 {
                     Date = DateTime.Now.ToString("dd.MM.yyyy HH:mm"),
                     Chemin = selectedPath ?? "N/A",
 
-                    NombreFichiers = directoryStats.FileCount,
-                    NombreDossiers = directoryStats.DirectoryCount,
-                    TailleTotale = directoryStats.TotalSize,
-                    TailleMoyenne = directoryStats.FileCount > 0
-                    ? directoryStats.AverageFileSize
-                    : 0,
+                    NombreFichiers = fileCount,
+                    NombreDossiers = dirCount,
+                    TailleTotale = totalSize,
+                    TailleMoyenne = avgSize,
 
-                    PlusGrosFichier = string.IsNullOrEmpty(directoryStats.LargestFilePath)
-                    ? "Aucun fichier"
-                    : directoryStats.LargestFilePath,
+                    PlusGrosFichier = largestFile,
 
-                    PlusGrosFichierTaille = directoryStats.LargestFileSize,
 
-                    PlusGrosDossier = string.IsNullOrEmpty(directoryStats.LargestDirectoryPath)
-                    ? "Aucun dossier"
-                    : directoryStats.LargestDirectoryPath,
+                    PlusGrosDossier = largestDir,
 
-                    PlusGrosDossierTaille = directoryStats.LargestDirectorySize,
 
-                    ElementsIgnores = directoryStats.IgnoredElements
                 };
-
 
                 List<object> analyses;
 
@@ -478,15 +515,12 @@ namespace TPI_AnalyseDossier
                     analyses = new List<object>();
                 }
 
-
                 analyses.Add(analysis);
-
 
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 string newJson = JsonSerializer.Serialize(analyses, options);
 
                 File.WriteAllText(filePath, newJson);
-
             }
             catch (Exception ex)
             {

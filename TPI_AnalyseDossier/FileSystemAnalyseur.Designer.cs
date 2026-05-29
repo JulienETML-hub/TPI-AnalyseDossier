@@ -33,6 +33,7 @@
             heavierFolderBtn = new Button();
             resultBtn = new Button();
             globalBtn = new Button();
+            refreshBtn = new Button();
             SuspendLayout();
             // 
             // heavierFileBtn
@@ -43,7 +44,7 @@
             heavierFileBtn.TabIndex = 0;
             heavierFileBtn.Text = "Top 15 Fichiers";
             heavierFileBtn.UseVisualStyleBackColor = true;
-            heavierFileBtn.Click += heavierFileBtn_Click;
+            heavierFileBtn.Click += HeavierFileBtn_Click;
             // 
             // panelMainPnl
             // 
@@ -51,7 +52,6 @@
             panelMainPnl.Name = "panelMainPnl";
             panelMainPnl.Size = new Size(1011, 501);
             panelMainPnl.TabIndex = 1;
-            panelMainPnl.Paint += panelMainPnl_Paint;
             // 
             // heavierFolderBtn
             // 
@@ -61,7 +61,7 @@
             heavierFolderBtn.TabIndex = 2;
             heavierFolderBtn.Text = "Top 10 Dossiers";
             heavierFolderBtn.UseVisualStyleBackColor = true;
-            heavierFolderBtn.Click += heavierFolderBtn_Click;
+            heavierFolderBtn.Click += HeavierFolderBtn_Click;
             // 
             // resultBtn
             // 
@@ -71,7 +71,7 @@
             resultBtn.TabIndex = 3;
             resultBtn.Text = "Résultats";
             resultBtn.UseVisualStyleBackColor = true;
-            resultBtn.Click += resultBtn_Click;
+            resultBtn.Click += ResultBtn_Click;
             // 
             // globalBtn
             // 
@@ -81,13 +81,24 @@
             globalBtn.TabIndex = 4;
             globalBtn.Text = "Vue d'ensemble";
             globalBtn.UseVisualStyleBackColor = true;
-            globalBtn.Click += globalBtn_Click;
+            globalBtn.Click += GlobalBtn_Click;
+            // 
+            // refreshBtn
+            // 
+            refreshBtn.Location = new Point(4, 183);
+            refreshBtn.Name = "refreshBtn";
+            refreshBtn.Size = new Size(75, 23);
+            refreshBtn.TabIndex = 5;
+            refreshBtn.Text = "Rafraichir";
+            refreshBtn.UseVisualStyleBackColor = true;
+            refreshBtn.Click += refreshBtn_Click;
             // 
             // FileSystemAnalyseur
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(983, 514);
+            Controls.Add(refreshBtn);
             Controls.Add(globalBtn);
             Controls.Add(resultBtn);
             Controls.Add(heavierFileBtn);
@@ -106,5 +117,6 @@
         private Button heavierFolderBtn;
         private Button resultBtn;
         private Button globalBtn;
+        private Button refreshBtn;
     }
 }

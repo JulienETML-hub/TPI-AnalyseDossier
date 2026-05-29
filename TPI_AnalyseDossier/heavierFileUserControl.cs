@@ -48,7 +48,10 @@ namespace TPI_AnalyseDossier
             this.selectedPath = selectedPath;
             pathAnalyzed.Text = this.selectedPath;
             await LoadServiceData(datasServiceArg);
+
+
             InitUI();
+
 
             this.dataLoaded = true;
         }
@@ -74,7 +77,7 @@ namespace TPI_AnalyseDossier
                 e.FormattingApplied = true;
             }
         }
-        private void InitUI()
+        private async Task InitUI()
         {
 
             var files = datasService.FilterFiles(
@@ -86,17 +89,16 @@ namespace TPI_AnalyseDossier
 
             foreach (var item in files.Item1)
             {
-                insertElementIntoDataGrid(item);
+                InsertElementIntoDataGrid(item);
             }
         }
-        private void insertElementIntoDataGrid(FileSystemItem fileSystemItem)
+        private void InsertElementIntoDataGrid(FileSystemItem fileSystemItem)
         {
-
-            dataGridViewTopFiles.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, fileSystemItem.Path);
-
-
-            //titleLbl.Text = datasService.directoriesWithSizeTop10.Length.ToString();
-
+            var cell = new DataGridViewTextBoxCell();
+            cell.Value = FormatService.EllipsizePath(fileSystemItem.Path, 30);
+            cell.Tag = fileSystemItem.Path;
+            dataGridViewTopFiles.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, null);
+            dataGridViewTopFiles.Rows[0].Cells[3] = cell;
         }
         private async Task LoadServiceData(DatasService? datasServiceArg)
         {
@@ -106,7 +108,6 @@ namespace TPI_AnalyseDossier
                 progressBarLbl.Visible = true;
                 progressBar1.Style = ProgressBarStyle.Marquee;
                 await datasService.DatasServiceSearch(selectedPath);
-                await datasService.GetTop10LargestDirectories();
                 DataResultsReady?.Invoke(datasService);
             }
             else
@@ -120,6 +121,21 @@ namespace TPI_AnalyseDossier
         private void pathAnalyzed_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void dataGridViewTopFiles_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                var cell = dataGridViewTopFiles.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                string fullPath = cell.Tag?.ToString();
+
+                if (!string.IsNullOrEmpty(fullPath))
+                {
+                    Clipboard.SetText(fullPath);
+                }
+            }
         }
     }
 }

@@ -45,7 +45,7 @@ namespace TPI_AnalyseDossier.FileSystem
 
             try
             {
-                // ✅ fichiers du dossier courant
+                // fichiers du dossier courant
                 foreach (var file in Directory.EnumerateFiles(this.Path))
                 {
                     try
@@ -57,7 +57,7 @@ namespace TPI_AnalyseDossier.FileSystem
                     }
                 }
 
-                // ✅ sous-dossiers (récursif)
+                // sous-dossiers 
                 foreach (var dir in Directory.EnumerateDirectories(this.Path))
                 {
                     try

@@ -173,7 +173,6 @@
             // pathLblDetails
             // 
             pathLblDetails.AutoSize = true;
-            pathLblDetails.Font = new Font("Segoe UI", 7F);
             pathLblDetails.Location = new Point(231, 466);
             pathLblDetails.Name = "pathLblDetails";
             pathLblDetails.Size = new Size(44, 12);

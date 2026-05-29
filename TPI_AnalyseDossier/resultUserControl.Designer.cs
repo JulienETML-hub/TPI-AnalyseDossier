@@ -28,13 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             dataGridViewResults = new DataGridView();
-            name = new DataGridViewTextBoxColumn();
-            size = new DataGridViewTextBoxColumn();
-            date = new DataGridViewTextBoxColumn();
-            pathClm = new DataGridViewTextBoxColumn();
             searchBarTbx = new TextBox();
             comboBox1 = new ComboBox();
             minimalSizeNmr = new NumericUpDown();
@@ -49,6 +46,11 @@
             backBtn = new Button();
             progressBar1 = new ProgressBar();
             progressBarLbl = new Label();
+            toolTip1 = new ToolTip(components);
+            name = new DataGridViewTextBoxColumn();
+            size = new DataGridViewTextBoxColumn();
+            date = new DataGridViewTextBoxColumn();
+            pathClm = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)dataGridViewResults).BeginInit();
             ((System.ComponentModel.ISupportInitialize)minimalSizeNmr).BeginInit();
             SuspendLayout();
@@ -71,48 +73,17 @@
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
             dataGridViewResults.DefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewResults.Location = new Point(6, 107);
+            dataGridViewResults.Location = new Point(3, 107);
             dataGridViewResults.Name = "dataGridViewResults";
             dataGridViewResults.ReadOnly = true;
             dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
             dataGridViewResults.RowsDefaultCellStyle = dataGridViewCellStyle2;
             dataGridViewResults.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewResults.Size = new Size(719, 345);
+            dataGridViewResults.Size = new Size(787, 345);
             dataGridViewResults.TabIndex = 0;
+            dataGridViewResults.CellDoubleClick += dataGridViewResults_CellDoubleClick;
             dataGridViewResults.CellFormatting += dataGridViewResults_CellFormatting;
             dataGridViewResults.Sorted += searchBtn_Click;
-            // 
-            // name
-            // 
-            name.AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-            name.HeaderText = "Nom";
-            name.Name = "name";
-            name.ReadOnly = true;
-            name.Width = 59;
-            // 
-            // size
-            // 
-            size.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            size.HeaderText = "Taille";
-            size.Name = "size";
-            size.ReadOnly = true;
-            size.Width = 58;
-            // 
-            // date
-            // 
-            date.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            date.HeaderText = "Dernière modification";
-            date.Name = "date";
-            date.ReadOnly = true;
-            date.Width = 134;
-            // 
-            // pathClm
-            // 
-            pathClm.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            pathClm.HeaderText = "Chemin";
-            pathClm.Name = "pathClm";
-            pathClm.ReadOnly = true;
-            pathClm.SortMode = DataGridViewColumnSortMode.NotSortable;
             // 
             // searchBarTbx
             // 
@@ -139,7 +110,6 @@
             minimalSizeNmr.Size = new Size(125, 23);
             minimalSizeNmr.TabIndex = 4;
             minimalSizeNmr.Tag = "";
-            minimalSizeNmr.ValueChanged += minimalSizeNmr_ValueChanged;
             // 
             // searchLbl
             // 
@@ -177,7 +147,7 @@
             searchBtn.Size = new Size(75, 23);
             searchBtn.TabIndex = 8;
             searchBtn.Text = "Filtrer";
-            searchBtn.UseVisualStyleBackColor = false;
+            searchBtn.UseVisualStyleBackColor = true;
             searchBtn.Click += searchBtn_Click;
             // 
             // pathLbl
@@ -217,7 +187,7 @@
             nextPageBtn.Name = "nextPageBtn";
             nextPageBtn.Size = new Size(119, 23);
             nextPageBtn.TabIndex = 14;
-            nextPageBtn.Text = "Page suivante";
+            nextPageBtn.Text = "Page suivante ->";
             nextPageBtn.UseVisualStyleBackColor = false;
             nextPageBtn.Click += nextPageBtn_Click;
             // 
@@ -229,7 +199,7 @@
             backBtn.Name = "backBtn";
             backBtn.Size = new Size(119, 23);
             backBtn.TabIndex = 15;
-            backBtn.Text = "Page précédente";
+            backBtn.Text = "<- Page précédente";
             backBtn.UseVisualStyleBackColor = false;
             backBtn.Click += button1_Click;
             // 
@@ -248,6 +218,48 @@
             progressBarLbl.Size = new Size(199, 15);
             progressBarLbl.TabIndex = 17;
             progressBarLbl.Text = "Chargement des données en cours...";
+            // 
+            // toolTip1
+            // 
+            toolTip1.IsBalloon = true;
+            toolTip1.ToolTipTitle = "Info";
+            // 
+            // name
+            // 
+            name.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            name.HeaderText = "Nom";
+            name.Name = "name";
+            name.ReadOnly = true;
+            name.Resizable = DataGridViewTriState.False;
+            name.Width = 235;
+            // 
+            // size
+            // 
+            size.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            size.HeaderText = "Taille";
+            size.Name = "size";
+            size.ReadOnly = true;
+            size.Resizable = DataGridViewTriState.False;
+            size.Width = 70;
+            // 
+            // date
+            // 
+            date.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            date.HeaderText = "Dernière modification";
+            date.Name = "date";
+            date.ReadOnly = true;
+            date.Resizable = DataGridViewTriState.False;
+            date.Width = 110;
+            // 
+            // pathClm
+            // 
+            pathClm.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            pathClm.HeaderText = "Chemin";
+            pathClm.Name = "pathClm";
+            pathClm.ReadOnly = true;
+            pathClm.Resizable = DataGridViewTriState.False;
+            pathClm.SortMode = DataGridViewColumnSortMode.NotSortable;
+            pathClm.Width = 360;
             // 
             // resultUserControl
             // 
@@ -269,7 +281,7 @@
             Controls.Add(searchBarTbx);
             Controls.Add(dataGridViewResults);
             Name = "resultUserControl";
-            Size = new Size(733, 498);
+            Size = new Size(790, 498);
             ((System.ComponentModel.ISupportInitialize)dataGridViewResults).EndInit();
             ((System.ComponentModel.ISupportInitialize)minimalSizeNmr).EndInit();
             ResumeLayout(false);
@@ -293,6 +305,7 @@
         private Button backBtn;
         private ProgressBar progressBar1;
         private Label progressBarLbl;
+        private ToolTip toolTip1;
         private DataGridViewTextBoxColumn name;
         private DataGridViewTextBoxColumn size;
         private DataGridViewTextBoxColumn date;

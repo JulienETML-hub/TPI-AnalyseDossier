@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using TPI_AnalyseDossier.FileSystem;
 using TPI_AnalyseDossier.Services;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-
+using System.Runtime.InteropServices;
 namespace TPI_AnalyseDossier
 {
     public partial class resultUserControl : UserControl
@@ -37,10 +37,13 @@ namespace TPI_AnalyseDossier
             minimalSizeNmr.Minimum = 0;
             minimalSizeNmr.Value = 25;
             paginationLbl.Text = paginationNb.ToString();
-
         }
 
         private async void searchBtn_Click(object sender, EventArgs e)
+        {
+            await LaunchSearch();
+        }
+        private async Task LaunchSearch()
         {
             if (!dataLoaded)
             {
@@ -72,47 +75,40 @@ namespace TPI_AnalyseDossier
 
             dataGridViewResults.Rows.Clear();
             nbElements.Text = "Nombre de fichiers trouvées : " + files.TotalCount;
-
             foreach (FileSystemItem item in files.Item1)
             {
-
-                Debug.WriteLine("Dans foreach avant");
-
                 insertElementIntoDataGrid(item);
-                Debug.WriteLine("Dans foreach aprèsé");
-
             }
-            Debug.WriteLine("1");
         }
         private void insertElementIntoDataGrid(FileSystemItem fileSystemItem)
         {
-            Debug.WriteLine("12");
-
-            dataGridViewResults.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, fileSystemItem.Path);
-
-
-
-
+            var cell = new DataGridViewTextBoxCell();
+            cell.Value = FormatService.EllipsizePath(fileSystemItem.Path, 35, true);
+            cell.Tag = fileSystemItem.Path;
+            dataGridViewResults.Rows.Insert(0, fileSystemItem.Name, fileSystemItem.Size, fileSystemItem.LastModify, null);
+            dataGridViewResults.Rows[0].Cells[3] = cell;
         }
-        public async Task LoadData(string selectedPath, DirectoryStats directoryStats, DatasService? datasServiceArg)
+        public async Task LoadData(string selectedPath, DatasService? datasServiceArg)
         {
             if (string.IsNullOrWhiteSpace(selectedPath))
                 return;
 
             this.selectedPath = selectedPath;
-            this.directoryStats = directoryStats;
-            nbElements.Text = "Nombre de fichiers trouvées : " + directoryStats.FileCount.ToString() ;
-            InitUI();
+
+
             await LoadServiceData(datasServiceArg);
             this.dataLoaded = true;
+            InitUI();
+
+            await LaunchSearch();
         }
         private void InitUI()
         {
-            pathLbl.Text = selectedPath;
-            
-            if (directoryStats != null)
+            pathLbl.Text = this.selectedPath;
+
+            if (datasService != null)
             {
-                string[] extensionList = directoryStats.FilesByExtension.Keys.Cast<string>().ToArray();
+                string[] extensionList = datasService.GetFilesByExtension().Keys.Cast<string>().ToArray();
 
                 clb.Items.Clear();
                 clb.Items.AddRange(extensionList);
@@ -121,7 +117,7 @@ namespace TPI_AnalyseDossier
                 var host = new ToolStripControlHost(clb);
                 dropDown.Items.Add(host);
 
-                comboBox1.Click -= ComboBoxClick; 
+                comboBox1.Click -= ComboBoxClick;
                 comboBox1.Click += ComboBoxClick;
 
                 _dropDown = dropDown;
@@ -131,14 +127,12 @@ namespace TPI_AnalyseDossier
 
         private async Task LoadServiceData(DatasService? datasServiceArg)
         {
-            if (datasServiceArg == null || datasServiceArg.SelectedPath != selectedPath)
+            if (datasServiceArg == null/* || datasServiceArg.SelectedPath != selectedPath*/)
             {
                 progressBar1.Visible = true;
                 progressBarLbl.Visible = true;
                 progressBar1.Style = ProgressBarStyle.Marquee;
                 await datasService.DatasServiceSearch(selectedPath);
-                await datasService.GetTop10LargestDirectories();
-
                 DataResultsReady?.Invoke(this.datasService);
             }
             else
@@ -157,13 +151,6 @@ namespace TPI_AnalyseDossier
             _dropDown?.Show(comboBox1, 0, comboBox1.Height);
         }
 
-
-
-        private void minimalSizeNmr_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void dataGridViewResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (dataGridViewResults.Columns[e.ColumnIndex].Name == "size" && e.Value != null)
@@ -172,13 +159,13 @@ namespace TPI_AnalyseDossier
                 double mb = (double)e.Value;
                 if (mb >= 1000000000)
                 {
-                    e.Value = (mb / (1000.0*1000.0 * 1000.0)).ToString("F2") + " Go";
+                    e.Value = (mb / (1000.0 * 1000.0 * 1000.0)).ToString("F2") + " Go";
                 }
                 else if (mb >= 1000000)
                 {
-                    e.Value = (mb/(1000.0*1000.0)).ToString("F2") + " Mo";
+                    e.Value = (mb / (1000.0 * 1000.0)).ToString("F2") + " Mo";
                 }
-                else if(mb >= 1000)
+                else if (mb >= 1000)
                 {
                     e.Value = (mb / 1000.0).ToString("F2") + " Ko";
                 }
@@ -193,6 +180,7 @@ namespace TPI_AnalyseDossier
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if(paginationNb>1)
             paginationNb--;
             paginationLbl.Text = paginationNb.ToString();
             this.searchBtn_Click(sender, e);
@@ -206,5 +194,19 @@ namespace TPI_AnalyseDossier
 
         }
 
+        private void dataGridViewResults_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                var cell = dataGridViewResults.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                string fullPath = cell.Tag?.ToString();
+
+                if (!string.IsNullOrEmpty(fullPath))
+                {
+                    Clipboard.SetText(fullPath);
+                }
+            }
+        }
     }
 }

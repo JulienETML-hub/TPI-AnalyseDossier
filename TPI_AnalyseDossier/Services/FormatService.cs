@@ -4,12 +4,30 @@ using System.Text;
 
 namespace TPI_AnalyseDossier.Services
 {
-    public class FormatService
+    public static class FormatService
     {
-        public static double ConvertToMo(double data)
+            public static string EllipsizePath(string path, int maxLength)
+    {
+        if (string.IsNullOrEmpty(path) || path.Length <= maxLength)
+            return path;
+
+        string fileName = Path.GetFileName(path);
+        string dirName = Path.GetFileName(Path.GetDirectoryName(path));
+
+
+        return "...\\"+ dirName +"\\"+ fileName;
+    }
+        public static string EllipsizePath(string path, int maxLength, bool withBeginningPath)
         {
-            //return data / (1024.0 * 1024.0);
-            return Math.Round(data / (1000.0*1000.0),2);
+            if (string.IsNullOrEmpty(path) || path.Length <= maxLength)
+                return path;
+
+            string fileName = Path.GetFileName(path);
+            string dirName = Path.GetFileName(Path.GetDirectoryName(path));
+
+            string start = path.Substring(0, maxLength / 2);
+
+            return start +"...\\" + dirName + "\\" + fileName;
         }
     }
 }

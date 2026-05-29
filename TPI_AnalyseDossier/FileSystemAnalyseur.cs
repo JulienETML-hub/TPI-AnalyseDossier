@@ -11,20 +11,20 @@ namespace TPI_AnalyseDossier
 {
     public partial class FileSystemAnalyseur : Form
     {
-                
+
         private PieChart _pieChart;
         private string selectedPath;
-        private DirectoryStats directoryStats;
         private DatasService datasService;
         private (string, long)[] top10Folder;
         private UserControl ctrl;
-
+        private UserControl currentControl;
         public FileSystemAnalyseur()
         {
             InitializeComponent();
             Theme.ApplyTheme(this);
-            
+            this.Icon = Properties.Resources.logoMultiSize;
         }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -34,12 +34,12 @@ namespace TPI_AnalyseDossier
                 this.selectedPath = data;
                 //this.Text += ": " + this.selectedPath;
             };
-            ctrl.DataReadyStats += (data) =>
+            ctrl.DataResultsReady += (data) =>
             {
-                this.directoryStats = data;
+                this.datasService = data;
             };
             LoadControl(ctrl);
-            backgroundSelection(ctrl);
+            BackgroundSelection(ctrl);
 
         }
 
@@ -48,48 +48,62 @@ namespace TPI_AnalyseDossier
         {
             panelMainPnl.Controls.Clear();
             control.Dock = DockStyle.Fill;
-            
-            panelMainPnl.Controls.Add(control);
-            
-        }
 
-        private void globalBtn_Click(object sender, EventArgs e)
+            panelMainPnl.Controls.Add(control);
+            currentControl = control;
+        }
+        private async void RefreshDataService()
+        {
+            await this.datasService.DatasServiceSearch(this.selectedPath);
+            if (currentControl is globalUserControl g)
+                await g.LoadData(selectedPath, datasService);
+
+            else if (currentControl is resultUserControl r)
+                await r.LoadData(selectedPath, datasService);
+
+            else if (currentControl is heavierFileUserControl hf)
+                await hf.LoadData(selectedPath, datasService);
+
+            else if (currentControl is heavierFolderUserControl hd)
+                await hd.LoadData(selectedPath, datasService);
+        }
+        private async void GlobalBtn_Click(object sender, EventArgs e)
         {
             var ctrl = new globalUserControl();
             ctrl.DataReadyPath += (data) =>
             {
                 this.selectedPath = data;
             };
-            ctrl.DataReadyStats += (data) =>
+            ctrl.DataResultsReady += (data) =>
             {
-                this.directoryStats = data;
+                this.datasService = data;
             };
-            ctrl.LoadData(this.selectedPath, this.directoryStats);
+            await ctrl.LoadData(this.selectedPath, this.datasService);
 
             LoadControl(ctrl);
-            backgroundSelection(ctrl);
-            
+            BackgroundSelection(ctrl);
+
 
         }
 
-        private async void resultBtn_Click(object sender, EventArgs e)
+        private async void ResultBtn_Click(object sender, EventArgs e)
         {
             var ctrl = new resultUserControl();
 
             ctrl.DataResultsReady += (data) =>
             {
-                Debug.WriteLine("CCC");
                 this.datasService = data;
             };
 
-            LoadControl(ctrl);
-            backgroundSelection(ctrl);
 
-            await ctrl.LoadData(this.selectedPath, this.directoryStats, this.datasService);
+            LoadControl(ctrl);
+            BackgroundSelection(ctrl);
+            await ctrl.LoadData(this.selectedPath, this.datasService);
+
         }
 
-        
-        private void heavierFileBtn_Click(object sender, EventArgs e)
+
+        private async void HeavierFileBtn_Click(object sender, EventArgs e)
         {
 
             var ctrl = new heavierFileUserControl();
@@ -97,13 +111,13 @@ namespace TPI_AnalyseDossier
             {
                 this.datasService = data;
             };
-           
+
             LoadControl(ctrl);
-            backgroundSelection(ctrl);
-            ctrl.LoadData(this.selectedPath, this.datasService);
+            BackgroundSelection(ctrl);
+            await ctrl.LoadData(this.selectedPath, this.datasService);
 
         }
-        private async void heavierFolderBtn_Click(object sender, EventArgs e)
+        private async void HeavierFolderBtn_Click(object sender, EventArgs e)
         {
 
             var ctrl = new heavierFolderUserControl();
@@ -113,14 +127,14 @@ namespace TPI_AnalyseDossier
             };
 
             LoadControl(ctrl);
-            backgroundSelection(ctrl);
+            BackgroundSelection(ctrl);
             await ctrl.LoadData(this.selectedPath, this.datasService);
 
 
 
         }
 
-        private void backgroundSelection(UserControl ctrl)
+        private void BackgroundSelection(UserControl ctrl)
         {
             globalBtn.BackColor = Color.LightGray;
             resultBtn.BackColor = Color.LightGray;
@@ -144,10 +158,11 @@ namespace TPI_AnalyseDossier
             }
         }
 
-        private void panelMainPnl_Paint(object sender, PaintEventArgs e)
+
+        private async void refreshBtn_Click(object sender, EventArgs e)
         {
+            RefreshDataService();
 
         }
-
-}
+    }
 }
