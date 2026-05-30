@@ -14,7 +14,6 @@ namespace TPI_AnalyseDossier.Services
         private List<String> allDirectories;
         private List<FileInfo> totalFileInfo;
         private string selectedPath;
-        private int accesrefuse = 0;
         private List<(string path, long size)> directoriesWithSize;
         public (string path, long size)[] directoriesWithSizeTop10;
         public string SelectedPath { get => selectedPath; set => selectedPath = value; }
@@ -42,7 +41,6 @@ namespace TPI_AnalyseDossier.Services
 
                         if ((info.Attributes & FileAttributes.ReparsePoint) != 0)
                         {
-                            accesrefuse++;
                             continue;
                         }
 
@@ -93,7 +91,6 @@ namespace TPI_AnalyseDossier.Services
                 this.allDirectories.Clear();
                 this.totalFileInfo.Clear();
                 this.directoriesWithSize.Clear();
-                this.accesrefuse = 0;
 
                 SearchSubDirectory(path);
             });

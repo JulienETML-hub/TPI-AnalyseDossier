@@ -78,10 +78,11 @@ namespace TPI_AnalyseDossier
             {
                 this.datasService = data;
             };
-            await ctrl.LoadData(this.selectedPath, this.datasService);
 
             LoadControl(ctrl);
             BackgroundSelection(ctrl);
+            await ctrl.LoadData(this.selectedPath, this.datasService);
+
 
 
         }

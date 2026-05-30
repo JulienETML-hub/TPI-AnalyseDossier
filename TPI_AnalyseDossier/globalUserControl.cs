@@ -28,7 +28,6 @@ namespace TPI_AnalyseDossier
         private PieChart _pieChart;
         public string selectedPath = null;
         public event Action<string> DataReadyPath;
-        public event Action<DirectoryStats> DataReadyStats;
         public event Action<DatasService> DataResultsReady;
         private DatasService datasService = new DatasService();
         private Dictionary<string, long> dirDict;
@@ -44,7 +43,6 @@ namespace TPI_AnalyseDossier
         public globalUserControl()
         {
             InitializeComponent();
-            //InitChart();
             listView1.View = View.Details;
             listView1.Columns.Add("Dossier", 50);
             listView1.Columns.Add("Fichier", 50);
@@ -56,7 +54,6 @@ namespace TPI_AnalyseDossier
             loadingLbl.Visible = false;
             loadingProgressBar.Visible = false;
             loadingLbl.BringToFront();
-            //panelGraphic1.SendToBack();
             _pieChart = new PieChart();
             panelGraphic1.Controls.Add(_pieChart);
             _pieChart.Dock = DockStyle.Fill;
