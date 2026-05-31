@@ -17,6 +17,7 @@ namespace TPI_AnalyseDossier
 {
     public partial class resultUserControl : UserControl
     {
+        DirectoryStats directoryStats;
         private string selectedPath = "Aucun chemin n'a été sélectionné pour le moment";
         private CheckedListBox clb = new CheckedListBox();
 
